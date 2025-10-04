@@ -1,7 +1,5 @@
 # Export Actors
 
-![badge_version] ![badge_issues] ![badge_downloads]
-
 ![badge_fvtt_versions] ![badge_foundry_installs]
 
 ![badge_mastodon] ![badge_discord]
@@ -50,24 +48,19 @@ A provider is a set of (javascript) instructions to be interpreted in order to g
 
 | Name                                                                                                                                      | System         | Description                                                                                                                         | Type             | Author(s)                             |
 | ----------------------------------------------------------------------------------------------------------------------------------------- | -------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ---------------- | ------------------------------------- |
-| Dungeons & Dragons 5th edition Character sheets                                                                                           | dnd5e (3.0.0+) | A set of PDF sheets based on the Official D&D5e Character Sheets by WoTC                                                            | pdf              | [bushvin](https://github.com/bushvin) |
-| Paizo's Pathfinder Roleplaying Game Character Sheets                                                                                      | pf1 (10.0+)    | The official Paizo Pathfinder Roleplaying Game Character Sheets                                                                     | pdf              | [bushvin](https://github.com/bushvin) |
-| Black Book Éditions Feuilles de personnage en français                                                                                    | pf2e (5.9.0+)  | La traduction française des feuille de personnage officielles de Paizo PF2e                                                         | pdf              | [bushvin](https://github.com/bushvin) |
-| PF2e Scribe Generator                                                                                                                     | pf2e (5.9.0+)  | A set of templates to generate scribe.pf2.tools markdown                                                                            | scribe.pf2.tools | [bushvin](https://github.com/bushvin) |
-| [Bushvin's PF2e Remaster Character sheets]([./pf2e-remaster-bushvin](https://github.com/bushvin/actor-export/wiki/pf2e-remaster-bushvin)) | pf2e (5.9.0+)  | A set of character sheets based on Paizo's PF2e Remaster                                                                            | pdf              | [bushvin](https://github.com/bushvin) |
-| [Paizo's PF2e Remaster Character sheets]([./pf2e-remaster-paizo](https://github.com/bushvin/actor-export/wiki/pf2e-remaster-paizo))       | pf2e (5.9.0+)  | The official Paizo PF2e Remastered Character Sheets                                                                                 | pdf              | [bushvin](https://github.com/bushvin) |
-| Paizo's Starfinder 2e Playtest Character sheets                                                                                           | pf2e (6.5.0+)  | The official Paizo Starfinder 2e Playtest Character Sheets. **This character sheet is subject to change as the game rules evolve.** | pdf              | [bushvin](https://github.com/bushvin) |
+| Dungeons & Dragons 5th edition Character sheets                                                                                           | dnd5e (3.0.0+) | A set of PDF sheets based on the Official D&D5e Character Sheets by WoTC                                                            | pdf              | [bushvin](https://codeberg.org/bushvin) |
+| Paizo's Pathfinder Roleplaying Game Character Sheets                                                                                      | pf1 (10.0+)    | The official Paizo Pathfinder Roleplaying Game Character Sheets                                                                     | pdf              | [bushvin](https://codeberg.org/bushvin) |
+| Black Book Éditions Feuilles de personnage en français                                                                                    | pf2e (5.9.0+)  | La traduction française des feuille de personnage officielles de Paizo PF2e                                                         | pdf              | [bushvin](https://codeberg.org/bushvin) |
+| PF2e Scribe Generator                                                                                                                     | pf2e (5.9.0+)  | A set of templates to generate scribe.pf2.tools markdown                                                                            | scribe.pf2.tools | [bushvin](https://codeberg.org/bushvin) |
+| [Bushvin's PF2e Remaster Character sheets]([./pf2e-remaster-bushvin](https://codeberg.org/bushvin/actor-export/wiki/pf2e-remaster-bushvin)) | pf2e (5.9.0+)  | A set of character sheets based on Paizo's PF2e Remaster                                                                            | pdf              | [bushvin](https://codeberg.org/bushvin) |
+| [Paizo's PF2e Remaster Character sheets]([./pf2e-remaster-paizo](https://codeberg.org/bushvin/actor-export/wiki/pf2e-remaster-paizo))       | pf2e (5.9.0+)  | The official Paizo PF2e Remastered Character Sheets                                                                                 | pdf              | [bushvin](https://codeberg.org/bushvin) |
+| Paizo's Starfinder 2e Playtest Character sheets                                                                                           | pf2e (6.5.0+)  | The official Paizo Starfinder 2e Playtest Character Sheets. **This character sheet is subject to change as the game rules evolve.** | pdf              | [bushvin](https://codeberg.org/bushvin) |
 
-For more, please refer to the [Provider](https://github.com/bushvin/actor-export/wiki#providers) section of the [wiki](https://github.com/bushvin/actor-export/wiki)
+For more, please refer to the [Provider](https://codeberg.org/bushvin/actor-export/wiki#providers) section of the [wiki](https://codeberg.org/bushvin/actor-export/wiki)
 
 ## Change notes
 
 See [CHANGELOG.md](CHANGELOG.md)
-
-[badge_version]: https://img.shields.io/github/v/tag/bushvin/actor-export?label=Version&style=flat-square&color=2577a1
-
-[badge_issues]: https://img.shields.io/github/issues/bushvin/actor-export?style=flat-square
-[badge_downloads]: https://img.shields.io/github/downloads/bushvin/actor-export/actor-export.zip?label=Downloads&style=flat-square&color=9b43a8
 
 [badge_fvtt_versions]: https://img.shields.io/endpoint?url=https://foundryshields.com/version?url=https://github.com/bushvin/actor-export/releases/latest/download/module.json&style=flat-square&color=ff6400
 
