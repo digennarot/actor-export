@@ -5,7 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
+## [2025.10.2] - 2025-10-04
+
+Due to the enshittification of github, I migrated the repository to codeberg.org.
+
 ## [2025.10.1] - 2025-10-04
+
+### Fixed
 
 - fixed url generation for foundryvtt instances not running on the root of the webserver (thank you @patagrain)
 - fixed dnd5e 5.1.0 CONFIG.DND5E.movementTypes breaking change (thank you @qw3ry)
