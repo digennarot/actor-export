@@ -1,5 +1,7 @@
 # Export Actors
 
+![badge_version] ![badge_issues]
+
 ![badge_fvtt_versions] ![badge_foundry_installs]
 
 ![badge_mastodon] ![badge_discord]
@@ -61,6 +63,10 @@ For more, please refer to the [Provider](https://codeberg.org/bushvin/actor-expo
 ## Change notes
 
 See [CHANGELOG.md](CHANGELOG.md)
+
+[badge_version]: https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fcodeberg.org%2Fapi%2Fv1%2Frepos%2Fbushvin%2Factor-export%2Freleases%2Flatest&query=%24.tag_name&style=flat-square&label=version&color=2577a1
+
+[badge_issues]: https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fcodeberg.org%2Fapi%2Fv1%2Frepos%2Fbushvin%2Factor-export%2Fissues&query=%24.length&suffix=open&style=flat-square&logo=codeberg&label=Issues&color=yellow
 
 [badge_fvtt_versions]: https://img.shields.io/endpoint?url=https://foundryshields.com/version?url=https://codeberg.org/bushvin/actor-export/releases/download/latest/module.json&style=flat-square&color=ff6400
 
