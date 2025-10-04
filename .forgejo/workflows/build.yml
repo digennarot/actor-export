@@ -1,0 +1,78 @@
+---
+name: Create release
+
+on:
+  push:
+    tags:
+      - '*'
+  workflow_dispatch:
+
+env:
+  fvtt_dry_run: ${{ vars.FVTT_DRY_RUN }}
+  fvtt_minimum: ${{ vars.FVTT_MINIMUM }}
+  fvtt_verified: ${{ vars.FVTT_VERIFIED }}
+  fvtt_module_id: ${{ vars.FVTT_MODULE_ID }}
+
+jobs:
+  release:
+    runs-on: codeberg-tiny
+    steps:
+      - name: Checkout the repo
+        uses: https://code.forgejo.org/actions/checkout@v4
+
+      - name: Create release directories
+        run: |
+          set -x
+          mkdir ./dist
+
+      - name: Substitute Manifest and download links for versioned Ones
+        id: substitute
+        shell: bash
+        run: |
+          set -x
+          TAG="${{ github.ref_name }}"
+          MANIFEST_FILE="module.json"
+          REPO_URL="https://codeberg.org/${{ github.repository }}"
+          DL_PATH="${REPO_URL}/releases/download/latest"
+          jq ".bugs=\"${REPO_URL}/issues\" | ".manifest=\"${DL_PATH}/module.json\" | .download=\"${DL_PATH}/${{ env.fvtt_module_id }}.zip\" | .url=\"${REPO_URL}\" | .version=\"${TAG}\"" ${MANIFEST_FILE} > ./dist/module.json
+
+      - name: Create archive
+        run: |
+          set -x
+          rm -f ./dist/${{ env.fvtt_module_id }}.zip
+          set -eu
+          which zip
+          zip -r ./dist/${{ env.fvtt_module_id }} * \
+            -x dist/\* \*.git\* src/\* package\*.json .vscode/\* ansible/\* node_modules/\* tmp/\* .prettier\* tools/\*
+
+      - name: Create version release
+        id: release
+        uses: https://code.forgejo.org/actions/forgejo-release@v2.7.2
+        with:
+          direction: upload  # create a release
+          title: '${{ env.fvtt_module_id }} v${{ github.ref_name }}'
+          release-dir: ./dist
+          token: '${{ secrets.CREATE_RELEASE }}'
+
+  publish:
+    needs: release
+    runs-on: codeberg-tiny
+    steps:
+      - name: Submit archive to FoundryVTT
+        run: |
+          curl -X POST "https://api.foundryvtt.com/_api/packages/release_version/" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: ${{ secrets.FOUNDRYVTT_RELEASE_TOKEN }}" \
+            -d '{
+              "id": "${{ env.fvtt_module_id }}",
+              "dry-run": ${{ env.fvtt_dry_run }},
+              "release": {
+                "version": "${{ github.ref_name }}",
+                "manifest": "https://codeberg.org/${{ github.repository }}/releases/download/${{ github.ref_name }}/module.json",
+                "notes": "https://codeberg.org/${{ github.repository }}/src/branch/main/CHANGELOG.md",
+                "compatibility": {
+                  "minimum": "${{ env.fvtt_minimum }}",
+                  "verified": "${{ env.fvtt_verified }}"
+                }
+              }
+            }'
