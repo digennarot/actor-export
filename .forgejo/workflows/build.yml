@@ -34,7 +34,7 @@ jobs:
           MANIFEST_FILE="module.json"
           REPO_URL="https://codeberg.org/${{ github.repository }}"
           DL_PATH="${REPO_URL}/releases/download/latest"
-          jq ".bugs=\"${REPO_URL}/issues\" | ".manifest=\"${DL_PATH}/module.json\" | .download=\"${DL_PATH}/${{ env.fvtt_module_id }}.zip\" | .url=\"${REPO_URL}\" | .version=\"${TAG}\"" ${MANIFEST_FILE} > ./dist/module.json
+          jq ".bugs=\"${REPO_URL}/issues\" | .manifest=\"${DL_PATH}/module.json\" | .download=\"${DL_PATH}/${{ env.fvtt_module_id }}.zip\" | .url=\"${REPO_URL}\" | .version=\"${TAG}\"" ${MANIFEST_FILE} > ./dist/module.json
 
       - name: Create archive
         run: |
