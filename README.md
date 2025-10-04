@@ -10,7 +10,7 @@ Feel free to join the [actor-export room](https://matrix.to/#/#actor-export-gene
 
 ## Installation
 
-Install this module through the Foundry VTT Administrator interface, by searching for `actor-export`, or by specifying the following URL: `https://github.com/bushvin/actor-export/releases/latest/download/module.json`
+Install this module through the Foundry VTT Administrator interface, by searching for `actor-export`, or by specifying the following URL: `https://codeberg.org/bushvin/actor-export/releases/download/latest/module.json`
 
 As a Gamemaster, activate the `actor-export` module in your world.
 
@@ -62,7 +62,7 @@ For more, please refer to the [Provider](https://codeberg.org/bushvin/actor-expo
 
 See [CHANGELOG.md](CHANGELOG.md)
 
-[badge_fvtt_versions]: https://img.shields.io/endpoint?url=https://foundryshields.com/version?url=https://github.com/bushvin/actor-export/releases/latest/download/module.json&style=flat-square&color=ff6400
+[badge_fvtt_versions]: https://img.shields.io/endpoint?url=https://foundryshields.com/version?url=https://codeberg.org/bushvin/actor-export/releases/latest/download/module.json&style=flat-square&color=ff6400
 
 [badge_mastodon]: https://img.shields.io/mastodon/follow/1084764?domain=https%3A%2F%2Fmastodon.social&logo=mastodon&logoColor=white&style=flat-square&label=%40bushvin%40mastodon.social
 
