@@ -60,6 +60,7 @@ jobs:
     runs-on: codeberg-tiny
     steps:
       - name: Submit archive to FoundryVTT
+        id: publish_to_foundry
         run: |
           curl -X POST "https://api.foundryvtt.com/_api/packages/release_version/" \
             -H "Content-Type: application/json" \
@@ -77,3 +78,16 @@ jobs:
                 }
               }
             }'
+
+
+  notify:
+    needs: publish_to_foundry
+    runs-on: codeberg-tiny
+    steps:
+      - name: Discord notification
+        id: notify_discord
+        run: |
+          curl -X POST https://discord.com/api/webhooks/${{ secrets.DISCORD_WEBHOOK_ID }}/${{ secrets.DISCORD_WEBHOOK_TOKEN }} \
+            -H "Content-Type:application/json" \
+            -H "Accept: application/json" \
+            --data "{\"content\": \" A new release of ${{ env.fvtt_module_id }} is published: `${{ github.ref_name }}`.\"}"
