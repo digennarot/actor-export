@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
+## [2025.10.3] - 2025-10-05
+
+### Fixed
+
+- fixed dnd5e saves issue (`or` operator doesn't care if it is false or a zero: they're both false.) (thank you, @adam)
+
 ## [2025.10.2] - 2025-10-04
 
 Due to the enshittification of github, I migrated the repository to codeberg.org.

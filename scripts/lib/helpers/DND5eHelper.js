@@ -45,12 +45,18 @@ class dnd5eActor {
         const abilities = {};
         try {
             Object.keys(this.actor.system.abilities).forEach((a) => {
+                let save;
+                if (typeof(this.actor.system.abilities[a].save.value) != 'undefined' ) {
+                    save = this.actor.system.abilities[a].save.value;
+                } else {
+                    save = this.actor.system.abilities[a].save;
+                }
                 abilities[a] = {
                     name: this.game.dnd5e.config.abilities[a].label,
                     slug: a,
                     modifier: this.actor.system.abilities[a].mod,
                     value: this.actor.system.abilities[a].value,
-                    save: this.actor.system.abilities[a].save?.value || this.actor.system.abilities[a].save,
+                    save: save,
                     isProficient: this.actor.system.abilities[a].proficient > 0,
                 };
             });
