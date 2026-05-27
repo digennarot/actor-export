@@ -7,8 +7,8 @@ on:
   workflow_dispatch:
 
 env:
-  fvtt_minimum: 11
-  fvtt_verified: 11
+  fvtt_minimum: 12
+  fvtt_verified: 14
   fvtt_dry_run: false
   fvtt_module_id: actor-export
 
