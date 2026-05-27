@@ -2,7 +2,7 @@
     "id": "actor-export",
     "title": "Actor export",
     "description": "Export actors for offline reference",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "compatibility": {
         "minimum": 12,
         "verified": 14,
