@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
+## [2026.5.1] - 2026-05-29
+
+### Added
+
+- Support for Foundry VTT v14.x
+
+### Fixed
+
+- fixed dnd5e saves
+- fixed dnd5e race issue
+
 ## [2025.10.3] - 2025-10-05
 
 ### Fixed
