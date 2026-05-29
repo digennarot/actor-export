@@ -393,7 +393,7 @@ class dnd5eActor {
                         name: s.name,
                         level: s.system.level,
                         components: [],
-                        prepared: s.system.preparation.prepared,
+                        prepared: s.system.prepared || s.system.preparation.prepared,
                         l10n: {
                             name: this.game.i18n.localize(s.name.trim()),
                         },
@@ -594,11 +594,14 @@ class dnd5eActor {
      * @type {number}
      */
     get spellSaveDC() {
-        if (semVer.lt(game.system.version, '4.0.0')) {
-            return this.actor.system.attributes.spelldc || 0;
-        } else {
-            return this.actor.system.attributes.spell.dc || 0;
+        let spellSaveDC = 0;
+        try {
+            spellSaveDC = this.actor.system.attributes.spell?.dc || this.actor.system.attributes.spelldc;
+        } catch (error) {
+            throw new dnd5eActorPropertyError('actor-export', this.className, 'spellSaveDC', error.message);
+
         }
+        return spellSaveDC;
     }
 
     /**
@@ -788,8 +791,10 @@ class dnd5ePlayer extends dnd5eActor {
     get race() {
         const race = super.race;
         try {
-            race['name'] = this.actor.system.details.race.name || this.actor.system.details.race;
-            race['l10n']['name'] = this.game.i18n.localize(race['name']);
+            if (this.actor.system.details.race !== null) {
+                race['name'] = this.actor.system.details.race.name || this.actor.system.details.race;
+                race['l10n']['name'] = this.game.i18n.localize(race['name']);
+            }
         } catch (error) {
             throw new dnd5eActorPropertyError('actor-export', this.className, 'race', error.message);
         }
