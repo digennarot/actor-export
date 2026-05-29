@@ -81,7 +81,7 @@ jobs:
 
 
   notify:
-    needs: publish_to_foundry
+    needs: publish
     runs-on: codeberg-tiny
     steps:
       - name: Discord notification
