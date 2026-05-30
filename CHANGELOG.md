@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
+## [2026.5.2] - 2026-05-27
+
+### Added
+
+- Support for Foundry VTT v14.x
+
 ## [2025.8.1] - 2025-08-11
 
 ### Fixed
@@ -54,7 +60,7 @@ This update brings compatibility for Foundry VTT v13
 ### Added
 
 - notification when no provider is selected on clicking download
-- console logging indicating a specific *HEAD* error is not an actual error. The error is caused by a fetch of a file to see if it exists (hence *HEAD*). It is needed by the module to be able to be able to create new (pdf) files
+- console logging indicating a specific *HEAD* error is not an actual error. The error is caused by a fetch of a file to see if it exists (hence *HEAD*). It is needed by the module to be able to be ab[...]
 
 ### Fixed
 
@@ -156,7 +162,7 @@ This update brings compatibility for Foundry VTT v13
 
 ### Fixed
 
-- `.prepareFinalAttributes()` causes issues when called multiple times. fixed by calling `.reset()` see [this](https://github.com/foundryvtt/dnd5e/issues/3630) issue for more info. (thank you yoriik and twarx)
+- `.prepareFinalAttributes()` causes issues when called multiple times. fixed by calling `.reset()` see [this](https://github.com/foundryvtt/dnd5e/issues/3630) issue for more info. (thank you yoriik a[...]
 
 ## [2024.7.4] 2024-07-30
 
