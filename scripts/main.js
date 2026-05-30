@@ -669,13 +669,13 @@ class actorExportProvidersDialogV2 extends HandlebarsApplicationMixin(Applicatio
         };
     }
     static async _onSubmit(_event, _form, formData) {
-        const expandedData = foundry.utils.expandObject(formData);
         let allowedProviders = [];
-        Object.keys(expandedData).forEach((key) => {
-            if (expandedData[key] === true) {
+        Object.keys(formData.object).forEach((key) => {
+            if (formData.object[key] === true) {
                 allowedProviders.push(key);
             }
         });
+
         game.settings.set(actorExport.ID, actorExport.SETTINGS.ENABLED_PROVIDERS, allowedProviders);
     }
 }
