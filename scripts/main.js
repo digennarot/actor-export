@@ -413,7 +413,6 @@ class actorExportDialogV2 extends HandlebarsApplicationMixin(ApplicationV2) {
             }
             selectedFiles[part[0]].push(part[2])
         });
-        actorExport.log('debug', 'selectedFiles:', selectedFiles)
         if (Object.keys(selectedFiles).length === 0) {
             ui.notifications.warn('You must select at least one provider to export your character!');
             return false;
