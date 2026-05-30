@@ -200,7 +200,10 @@ class pf2eActor {
                     .filter((i) => i.type === 'feat' && subClassFeatures.includes(i.system.slug))
                     .forEach((f) => {
                         this.actor.items
-                            .filter((i) => i.flags?.pf2e?.grantedBy?.id === f._id)
+                            .filter(i =>
+                                i.flags?.pf2e?.grantedBy?.id === f._id ||
+                                i.flags?.sf2e?.grantedBy?.id === f._id
+                            )
                             .forEach((s) => {
                                 subClass.push(s.name);
                             });
@@ -804,8 +807,9 @@ class pf2eActor {
      */
     get sneakAttackDamage() {
         try {
-            if (typeof this.actor.flags.pf2e.sneakAttackDamage !== 'undefined') {
-                const sad = this.actor.flags.pf2e.sneakAttackDamage;
+            const flags = this.actor.flags.pf2e || this.actor.flags.sf2e
+            if (typeof flags.sneakAttackDamage !== 'undefined') {
+                const sad = flags.sneakAttackDamage;
                 return `${sad.number}d${sad.faces}`;
             } else {
                 return '';
@@ -993,7 +997,10 @@ class pf2eActor {
                         description: a.system.description?.value,
                     };
                     const sub = this.actor.items
-                        .filter((i) => i.flags?.pf2e?.grantedBy?.id === a._id)
+                        .filter(i =>
+                            i.flags?.pf2e?.grantedBy?.id === a._id ||
+                            i.flags?.sf2e?.grantedBy?.id === a._id
+                        )
                         .map((i) => i.name);
                     if (sub.length > 0) {
                         feature['displayName'] = `${a.name} (${sub.join(', ')})`;
@@ -1003,11 +1010,13 @@ class pf2eActor {
             /* get the hidden heritage features */
             this.actor.items
                 .filter(
-                    (f) => f.type === 'feat' && f.system.location === null && f.flags.pf2e.grantedBy?.id !== undefined
+                    (f) => f.type === 'feat' && f.system.location === null && (f.flags.pf2e.grantedBy?.id !== undefined || f.flags.sf2e.grantedBy?.id !== undefined)
                 )
                 .forEach((a) => {
                     const grantedBy = this.actor.items.filter(
-                        (i) => i._id === a.flags?.pf2e?.grantedBy?.id && i.type === 'heritage'
+                        (i) =>
+                            i._id === a.flags?.pf2e?.grantedBy?.id && i.type === 'heritage' ||
+                            i._id === a.flags?.sf2e?.grantedBy?.id && i.type === 'heritage'
                     );
                     if (grantedBy.length > 0) {
                         const feature = {
@@ -1055,7 +1064,10 @@ class pf2eActor {
                     .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
                     .forEach((f) => {
                         const sub = this.actor.items
-                            .filter((f) => f.flags?.pf2e?.grantedBy?.id === f._id)
+                            .filter((f) =>
+                                f.flags?.pf2e?.grantedBy?.id === f._id ||
+                                f.flags?.sf2e?.grantedBy?.id === f._id
+                            )
                             .map((m) => m.name);
                         let featName = f.name;
                         if (f.grants.length > 0) {
@@ -1203,7 +1215,7 @@ class pf2eActor {
         try {
             this.actor.items
                 .filter(
-                    (f) => f.type === 'feat' && f.system.location === null && f.flags.pf2e.grantedBy?.id === undefined
+                    (f) => f.type === 'feat' && f.system?.location === null && f.flags?.pf2e?.grantedBy?.id === undefined && f.flags?.sf2e?.grantedBy?.id === undefined
                 )
                 .forEach((feat) => {
                     bonusFeats.push({
@@ -1270,7 +1282,10 @@ class pf2eActor {
                 )
                 .forEach((f) => {
                     const subFeatures = this.actor.items
-                        .filter((i) => i.flags?.pf2e?.grantedBy?.id === f._id)
+                        .filter((i) =>
+                            i.flags?.pf2e?.grantedBy?.id === f._id ||
+                            i.flags?.sf2e?.grantedBy?.id === f._id
+                        )
                         .map((m) => m.name);
                     const feature = {
                         level: f.system.level.value,
