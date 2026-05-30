@@ -1010,7 +1010,7 @@ class pf2eActor {
             /* get the hidden heritage features */
             this.actor.items
                 .filter(
-                    (f) => f.type === 'feat' && f.system.location === null && (f.flags.pf2e.grantedBy?.id !== undefined || f.flags.sf2e.grantedBy?.id !== undefined)
+                    (f) => f.type === 'feat' && f.system.location === null && (f.flags?.pf2e?.grantedBy?.id !== undefined || f.flags?.sf2e?.grantedBy?.id !== undefined)
                 )
                 .forEach((a) => {
                     const grantedBy = this.actor.items.filter(
