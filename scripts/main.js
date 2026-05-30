@@ -50,6 +50,20 @@ export class actorExport {
         }
     }
 
+    static partition(str, separator = ".") {
+        const index = str.indexOf(separator);
+
+        if (index === -1) {
+            return [str, "", ""];
+        }
+
+        return [
+            str.slice(0, index),
+            separator,
+            str.slice(index + separator.length)
+        ];
+    }
+
     /**
      * The initialization function for the module
      */
@@ -378,37 +392,28 @@ class actorExportDialogV2 extends HandlebarsApplicationMixin(ApplicationV2) {
 
     static async _onSubmit(_event, _form, formData) {
         const data = formData.object;
-        actorExport.log('debug', 'submitting!', data);
         let selectedProviderFiles = [];
-        document
-            .getElementById('actor-export-form')
-            .querySelectorAll('input[type=checkbox]')
-            .forEach((input) => {
-                if (input.checked) {
-                    const provider = input.getAttribute('data-provider');
-                    const file = input.getAttribute('data-file');
-                    selectedProviderFiles.push(`${provider}.${file}`);
-                }
-            });
+
+        Object.keys(formData.object).forEach((key) => {
+            if (formData.object[key] === true) {
+                    selectedProviderFiles.push(key);
+            }
+        });
+
         game.settings.set(actorExport.ID, actorExport.SETTINGS.SELECTED_PROVIDER_FILES, selectedProviderFiles);
     }
 
     downloadFiles(_event) {
+        const fileList = game.settings.get(actorExport.ID, actorExport.SETTINGS.SELECTED_PROVIDER_FILES);
         const selectedFiles = {};
-        document
-            .getElementById('actor-export-form')
-            .querySelectorAll('input[type=checkbox]')
-            .forEach((input) => {
-                if (input.checked) {
-                    document.getElementById('download_counter').value =
-                        parseInt(document.getElementById('download_counter').value) + 1;
-                    actorExport.providerFileProgress(document.getElementById(`field.${input.id}`));
-                    if (!Object.keys(selectedFiles).includes(input.getAttribute('data-provider'))) {
-                        selectedFiles[input.getAttribute('data-provider')] = [];
-                    }
-                    selectedFiles[input.getAttribute('data-provider')].push(input.getAttribute('data-file'));
-                }
-            });
+        fileList.forEach((value) => {
+            let part = actorExport.partition(value, '.')
+            if (!Object.keys(selectedFiles).includes(part[0])) {
+                selectedFiles[part[0]] = [];
+            }
+            selectedFiles[part[0]].push(part[2])
+        });
+        actorExport.log('debug', 'selectedFiles:', selectedFiles)
         if (Object.keys(selectedFiles).length === 0) {
             ui.notifications.warn('You must select at least one provider to export your character!');
             return false;
@@ -561,7 +566,7 @@ class actorExportCustomProviderV2 extends HandlebarsApplicationMixin(Application
     static DEFAULT_OPTIONS = {
         id: 'actor-export-custom-provider',
         tag: 'form',
-        classes: ['standard-form'],
+        classes: ['standard-form', 'window-content'],
         window: {
             title: 'ACTOR-EXPORT.settings.actorExportCustomProvider.title',
             icon: 'fa fa-file-code',
@@ -612,7 +617,7 @@ class actorExportCustomProviderV2 extends HandlebarsApplicationMixin(Application
 
     static async _onSubmit(_event, _form, formData) {
         const oldCustomProvider = game.settings.get(actorExport.ID, actorExport.SETTINGS.PROVIDER_CUSTOM_CODE);
-        const newCustomProvider = document.getElementById('actor-export-custom-provider-javascript').value;
+        const newCustomProvider = formData.object['actor-export-custom-provider']
         if (oldCustomProvider !== newCustomProvider) {
             game.settings.set(actorExport.ID, actorExport.SETTINGS.PROVIDER_CUSTOM_CODE, newCustomProvider);
         }
