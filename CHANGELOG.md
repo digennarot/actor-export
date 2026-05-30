@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
+## [2026.5.3] - 2026-05-30
+
+### Added
+
+- provider for sf2e game system: sf2e-paizo using the default charactersheet
+
+### Fixed
+
+- pf2eActor support for sf2e game system
+
+### Removed
+
+- pf2eActor support for FOundry v11
+
 ## [2026.5.2] - 2026-05-30
 
 ### Added
