@@ -1,5 +1,4 @@
 import { genericPropertyError, genericHelper } from './GenericHelper.js';
-import { semVer } from '../SemVer.js';
 import { actorExport } from '../../main.js';
 /**
  * PF2eHelper module. Provides a couple of classes to easily manage your PF2e characters.
@@ -639,14 +638,7 @@ class pf2eActor {
      */
     get languages() {
         try {
-            if (semVer.gte(this.game.system.version, '5.12.0')) {
-                return this.actor.system.details.languages.value.filter((i) => i.trim() != '').join(', ');
-            } else {
-                return this.actor.system.traits.languages.value
-                    .concat([this.actor.system.traits.languages.custom])
-                    .filter((i) => i.trim() !== '')
-                    .join(', ');
-            }
+            return this.actor.system.details.languages.value.filter((i) => i.trim() != '').join(', ');
         } catch (error) {
             throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'languages', error.message);
         }
@@ -689,27 +681,15 @@ class pf2eActor {
      */
     get senses() {
         try {
-            if (semVer.gte(game.system.version, '5.12.0')) {
-                return this.actor.system.perception.senses
-                    .filter((i) => i.type)
-                    .map((i) => i.label)
-                    .concat(
-                        this.actor.system.perception.modifiers
-                            .filter((i) => i.type === 'item' || i.type === 'untyped')
-                            .map((i) => ' ' + (i.slug ? i.slug : i.label) + ' ' + (i.modifier < 0 ? '' : '+') + i.modifier)
-                    )
-                    .join(', ');
-            } else {
-                return this.actor.system.traits.senses
-                    .filter((i) => i.type)
-                    .map((i) => i.label)
-                    .concat(
-                        this.actor.system.attributes.perception.modifiers
-                            .filter((i) => i.type === 'item' || i.type === 'untyped')
-                            .map((i) => ' ' + (i.slug ? i.slug : i.label) + ' ' + (i.modifier < 0 ? '' : '+') + i.modifier)
-                    )
-                    .join(', ');
-            }
+            return this.actor.system.perception.senses
+                .filter((i) => i.type)
+                .map((i) => i.label)
+                .concat(
+                    this.actor.system.perception.modifiers
+                        .filter((i) => i.type === 'item' || i.type === 'untyped')
+                        .map((i) => ' ' + (i.slug ? i.slug : i.label) + ' ' + (i.modifier < 0 ? '' : '+') + i.modifier)
+                )
+                .join(', ');
         } catch (error) {
             throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'senses', error.message);
         }
