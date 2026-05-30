@@ -731,4 +731,4 @@ function injectActorExportButton(sheet, buttons) {
  * Add the 'Export' button in the character's actor dialog for ApplicationV2
  */
 Hooks.on('getActorSheetHeaderButtons', injectActorExportButton);
-Hooks.on('getHeaderControlsApplicationV2', injectActorExportButton);
+Hooks.on('getHeaderControlsActorSheetV2', injectActorExportButton);
