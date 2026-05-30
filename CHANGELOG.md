@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
+## [2026.5.2] - 2026-05-30
+
+### Added
+
+- `actorExport.partition` function similar to it's python counterpart
+
+### Fixed
+
+- fix wrong hook to add the export button only to actor dialogs
+- fix the way allowed providers are generated
+- fix the dialogs as forms are now built-in
+- fix the way providers are selected in the actor export form
+- update the method of downloading the selected providers & files
+- align dialog styles with Foundry's presets
+- fix `Pf2eHelper.pf2eActor.movement` when movement is not selected (thanks @Chip Potato)
+- multiple fixes in `Pf2eHelper.js` to allow for better error catching
+
 ## [2026.5.1] - 2026-05-29
 
 ### Added
