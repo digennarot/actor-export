@@ -85,10 +85,19 @@ jobs:
     needs: publish
     runs-on: codeberg-tiny
     steps:
+
+      - name: Matrix notification
+        id: notify_matrix
+        run: |
+          curl -X POST \
+            -H "Content-Type:application/json" \
+            -d '{"text": "A new release of ${{ env.fvtt_module_id }} is published: \`${{ github.ref_name }}\`."}' \
+            "https://${{ env.MATRIX_HOMESERVER }}/hookshot/webhook/${{ secrets.MATRIX_WEBHOOK_ID }}"
+
       - name: Discord notification
         id: notify_discord
         run: |
-          curl -X POST https://discord.com/api/webhooks/${{ secrets.DISCORD_WEBHOOK_ID }}/${{ secrets.DISCORD_WEBHOOK_TOKEN }} \
+          curl -X POST "https://discord.com/api/webhooks/${{ secrets.DISCORD_WEBHOOK_ID }}/${{ secrets.DISCORD_WEBHOOK_TOKEN }}" \
             -H "Content-Type:application/json" \
             -H "Accept: application/json" \
-            --data "{\"content\": \" A new release of ${{ env.fvtt_module_id }} is published: \`${{ github.ref_name }}\`.\"}"
+            --data "{\"content\": \"A new release of ${{ env.fvtt_module_id }} is published: \`${{ github.ref_name }}\`.\"}"
