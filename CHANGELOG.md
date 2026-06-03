@@ -5,11 +5,76 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
-## [2026.5.2] - 2026-05-27
+## [unreleased]
+
+### Added
+
+- Declared support for pf2e system v8.2.0 across all pf2e providers.
+
+### Changed
+
+- README: switched repository URLs to digennarot/actor-export, added a Supported Foundry Versions note, refreshed the provider table, and fixed broken markdown links.
+- Merged upstream bushvin/actor-export changes through 2026.5.3 (new sf2e-paizo provider, Foundry v14 built-in form dialog rewrites, dnd5e fixes).
+- dnd5e: adapted helper to dnd5e v5.x / Foundry v14 schema.
+
+## [2026.5.3] - 2026-05-30
+
+### Added
+
+- provider for sf2e game system: sf2e-paizo using the default charactersheet
+
+### Fixed
+
+- pf2eActor support for sf2e game system
+
+### Removed
+
+- pf2eActor support for FOundry v11
+
+## [2026.5.2] - 2026-05-30
+
+### Added
+
+- `actorExport.partition` function similar to it's python counterpart
+
+### Fixed
+
+- fix wrong hook to add the export button only to actor dialogs
+- fix the way allowed providers are generated
+- fix the dialogs as forms are now built-in
+- fix the way providers are selected in the actor export form
+- update the method of downloading the selected providers & files
+- align dialog styles with Foundry's presets
+- fix `Pf2eHelper.pf2eActor.movement` when movement is not selected (thanks @Chip Potato)
+- multiple fixes in `Pf2eHelper.js` to allow for better error catching
+
+## [2026.5.1] - 2026-05-29
 
 ### Added
 
 - Support for Foundry VTT v14.x
+
+### Fixed
+
+- fixed dnd5e saves
+- fixed dnd5e race issue
+
+## [2025.10.3] - 2025-10-05
+
+### Fixed
+
+- fixed dnd5e saves issue (`or` operator doesn't care if it is false or a zero: they're both false.) (thank you, @adam)
+
+## [2025.10.2] - 2025-10-04
+
+Due to the enshittification of github, I migrated the repository to codeberg.org.
+
+## [2025.10.1] - 2025-10-04
+
+### Fixed
+
+- fixed url generation for foundryvtt instances not running on the root of the webserver (thank you @patagrain)
+- fixed dnd5e 5.1.0 CONFIG.DND5E.movementTypes breaking change (thank you @qw3ry)
 
 ## [2025.8.1] - 2025-08-11
 

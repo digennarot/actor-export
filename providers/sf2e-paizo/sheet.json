@@ -1,0 +1,27 @@
+{
+    "id": "sf2e-paizo",
+    "name": "Paizo's Starfinder 2e Character sheets",
+    "description": "The official Paizo Starfinder 2e Character Sheets.",
+    "icon": "fas fa-file-pdf",
+    "type": "pdf",
+    "authors": [
+        {
+            "name": "bushvin",
+            "url": "https://github.com/bushvin"
+        }
+    ],
+    "requirements": [
+        {
+            "system": "sf2e",
+            "system_version": "1.1.2"
+        }
+    ],
+    "files": [
+        {
+            "uri": "StarfinderSecondEdition_CharacterSheet.pdf",
+            "name": "Player Character Sheet (Original)",
+            "description": "The standard Paizo Starfinder 2e Player Character Sheet",
+            "actor_type": ["character", "npc"]
+        }
+    ]
+}

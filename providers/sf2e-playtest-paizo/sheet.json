@@ -13,7 +13,7 @@
     "requirements": [
         {
             "system": "pf2e",
-            "system_version": "6.5.0"
+            "system_version": "8.2.0"
         },
         {
             "module": "starfinder-field-test-for-pf2e",

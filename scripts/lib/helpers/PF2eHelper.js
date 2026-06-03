@@ -1,5 +1,4 @@
 import { genericPropertyError, genericHelper } from './GenericHelper.js';
-import { semVer } from '../SemVer.js';
 /**
  * PF2eHelper module. Provides a couple of classes to easily manage your PF2e characters.
  * @module PF2eHelper
@@ -40,7 +39,11 @@ class pf2eActor {
      * @type {string}
      */
     get name() {
-        return this.actor.name;
+        try {
+            return this.actor.name;
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'name', error.message);
+        }
     }
 
     /**
@@ -65,7 +68,11 @@ class pf2eActor {
      * @type {string[]}
      */
     get traits() {
-        return Array.from(this.actor.traits);
+        try {
+            return Array.from(this.actor.traits);
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'traits', error.message);
+        }
     }
 
     /**
@@ -79,11 +86,15 @@ class pf2eActor {
      * @type {actorAncestry}
      */
     get ancestry() {
-        const ancestry = {
-            name: this.actor.ancestry?.name || 'unknown',
-            description: this.actor.ancestry?.system.description.value,
-        };
-        return ancestry;
+        try {
+            const ancestry = {
+                name: this.actor.ancestry?.name || 'unknown',
+                description: this.actor.ancestry?.system.description.value,
+            };
+            return ancestry;
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'ancestry', error.message);
+        }
     }
 
     /**
@@ -97,12 +108,15 @@ class pf2eActor {
      * @type {actorHeritage}
      */
     get heritage() {
-        const heritage = {
-            name: this.actor.heritage?.name || 'unknown',
-            description: this.actor.heritage?.system.description.value,
-        };
-
-        return heritage;
+        try {
+            const heritage = {
+                name: this.actor.heritage?.name || 'unknown',
+                description: this.actor.heritage?.system.description.value,
+            };
+            return heritage;
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'heritage', error.message);
+        }
     }
 
     /**
@@ -110,7 +124,11 @@ class pf2eActor {
      * @type {string}
      */
     get size() {
-        return this.actor.system.traits.size.value || 'unknown';
+        try {
+            return this.actor.system.traits.size.value || 'unknown';
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'size', error.message);
+        }
     }
 
     /**
@@ -124,10 +142,14 @@ class pf2eActor {
      * @type {actorBackground}
      */
     get background() {
-        return {
-            name: '',
-            description: '',
-        };
+        try {
+            return {
+                name: '',
+                description: '',
+            };
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'background', error.message);
+        }
     }
 
     /**
@@ -143,48 +165,54 @@ class pf2eActor {
      * @type {actorClass}
      */
     get class() {
-        const classInfo = {
-            name: this.actor.class?.name || 'unknown',
-            description: this.actor.class?.system.description.value,
-            subClass: '',
-            id: this.actor.class?._id || '',
-        };
-        const subClassFeatures = [
-            'research-field', // alchemist
-            'instinct', // barbarian
-            'muses', // bard
-            'deity-and-cause', // champion
-            'doctrine', // cleric
-            'druidic-order', // druid
-            'gunslingers-way', // gunslinger
-            'innovation', // inventor
-            'methodology', // investigator
-            'hybrid-study', // magus
-            'mystery', // oracle
-            'conscious-mind', // psychic
-            'rogues-racket', // rogue
-            'bloodline', // sorcerer
-            'evolution-feat', // summoner
-            'swashbucklers-style', // swashbucklers
-            'patron', // witch
-            'arcane-thesis', // wizard
-        ];
-        const subClass = [];
         try {
-            this.actor.items
-                .filter((i) => i.type === 'feat' && subClassFeatures.includes(i.system.slug))
-                .forEach((f) => {
-                    this.actor.items
-                        .filter((i) => i.flags?.pf2e?.grantedBy?.id === f._id)
-                        .forEach((s) => {
-                            subClass.push(s.name);
-                        });
-                });
-            classInfo['subClass'] = subClass.join('/');
+            const classInfo = {
+                name: this.actor.class?.name || 'unknown',
+                description: this.actor.class?.system.description.value,
+                subClass: '',
+                id: this.actor.class?._id || '',
+            };
+            const subClassFeatures = [
+                'research-field', // alchemist
+                'instinct', // barbarian
+                'muses', // bard
+                'deity-and-cause', // champion
+                'doctrine', // cleric
+                'druidic-order', // druid
+                'gunslingers-way', // gunslinger
+                'innovation', // inventor
+                'methodology', // investigator
+                'hybrid-study', // magus
+                'mystery', // oracle
+                'conscious-mind', // psychic
+                'rogues-racket', // rogue
+                'bloodline', // sorcerer
+                'evolution-feat', // summoner
+                'swashbucklers-style', // swashbucklers
+                'patron', // witch
+                'arcane-thesis', // wizard
+            ];
+            const subClass = [];
+            try {
+                this.actor.items
+                    .filter((i) => i.type === 'feat' && subClassFeatures.includes(i.system.slug))
+                    .forEach((f) => {
+                        this.actor.items
+                            .filter(
+                                (i) => i.flags?.pf2e?.grantedBy?.id === f._id || i.flags?.sf2e?.grantedBy?.id === f._id
+                            )
+                            .forEach((s) => {
+                                subClass.push(s.name);
+                            });
+                    });
+                classInfo['subClass'] = subClass.join('/');
+            } catch (error) {
+                throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'class', error.message);
+            }
+            return classInfo;
         } catch (error) {
             throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'class', error.message);
         }
-        return classInfo;
     }
 
     /**
@@ -192,10 +220,14 @@ class pf2eActor {
      * @type {number|string}
      */
     get level() {
-        if (typeof this.actor.system.details.level.value === 'number') {
-            return this.actor.system.details.level.value;
-        } else {
-            return 'unknown';
+        try {
+            if (typeof this.actor.system.details.level.value === 'number') {
+                return this.actor.system.details.level.value;
+            } else {
+                return 'unknown';
+            }
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'level', error.message);
         }
     }
 
@@ -204,10 +236,14 @@ class pf2eActor {
      * @type {number|string}
      */
     get xp() {
-        if (typeof this.actor.system.details.xp?.value === 'number') {
-            return this.actor.system.details.xp?.value;
-        } else {
-            return 'unknown';
+        try {
+            if (typeof this.actor.system.details.xp?.value === 'number') {
+                return this.actor.system.details.xp?.value;
+            } else {
+                return 'unknown';
+            }
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'xp', error.message);
         }
     }
 
@@ -216,7 +252,11 @@ class pf2eActor {
      * @type {number}
      */
     get heroPoints() {
-        return this.actor.system.resources.heroPoints.value || 0;
+        try {
+            return this.actor.system.resources.heroPoints.value || 0;
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'heroPoints', error.message);
+        }
     }
 
     /**
@@ -299,7 +339,11 @@ class pf2eActor {
      * @type {boolean}
      */
     get hasShieldEquipped() {
-        return this.actor.items.filter((i) => i.type === 'shield' && i.isEquipped).length > 0;
+        try {
+            return this.actor.items.filter((i) => i.type === 'shield' && i.isEquipped).length > 0;
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'hasShieldEquipped', error.message);
+        }
     }
 
     /**
@@ -330,7 +374,7 @@ class pf2eActor {
                 return undefined;
             }
         } catch (error) {
-            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'ac', error.message);
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'equippedShield', error.message);
         }
     }
     /**
@@ -355,12 +399,16 @@ class pf2eActor {
      */
     get defenseProficiencies() {
         const proficiencies = {};
-        Object.keys(this.actor.system.proficiencies?.defenses || []).forEach((defense) => {
-            proficiencies[defense] = {
-                name: defense,
-                rank: this.actor.system.proficiencies.defenses[defense].rank,
-            };
-        });
+        try {
+            Object.keys(this.actor.system.proficiencies?.defenses || []).forEach((defense) => {
+                proficiencies[defense] = {
+                    name: defense,
+                    rank: this.actor.system.proficiencies.defenses[defense].rank,
+                };
+            });
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'defenseProficiencies', error.message);
+        }
         return proficiencies;
     }
 
@@ -429,11 +477,15 @@ class pf2eActor {
      * @type {actorHP}
      */
     get hp() {
-        return {
-            max: this.actor.hitPoints.max || 0,
-            value: this.actor.hitPoints.value || 0,
-            temp: this.actor.hitPoints.temp || 0,
-        };
+        try {
+            return {
+                max: this.actor.hitPoints.max || 0,
+                value: this.actor.hitPoints.value || 0,
+                temp: this.actor.hitPoints.temp || 0,
+            };
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'hp', error.message);
+        }
     }
 
     /**
@@ -447,10 +499,14 @@ class pf2eActor {
      * @type {Object}
      */
     get dying() {
-        return {
-            max: this.actor.system.attributes.dying.max || 0,
-            value: this.actor.system.attributes.dying.value || 0,
-        };
+        try {
+            return {
+                max: this.actor.system.attributes.dying.max || 0,
+                value: this.actor.system.attributes.dying.value || 0,
+            };
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'dying', error.message);
+        }
     }
 
     /**
@@ -458,10 +514,14 @@ class pf2eActor {
      * @type {Object}
      */
     get wounded() {
-        return {
-            max: this.actor.system.attributes.wounded.max || 0,
-            value: this.actor.system.attributes.wounded.value || 0,
-        };
+        try {
+            return {
+                max: this.actor.system.attributes.wounded.max || 0,
+                value: this.actor.system.attributes.wounded.value || 0,
+            };
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'wounded', error.message);
+        }
     }
 
     /**
@@ -499,10 +559,14 @@ class pf2eActor {
      * @type {string}
      */
     get weaknesses() {
-        return this.actor.system.attributes.weaknesses
-            .map((m) => m.type + ' ' + m.value)
-            .sort()
-            .join(', ');
+        try {
+            return this.actor.system.attributes.weaknesses
+                .map((m) => m.type + ' ' + m.value)
+                .sort()
+                .join(', ');
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'weaknesses', error.message);
+        }
     }
 
     /**
@@ -510,7 +574,11 @@ class pf2eActor {
      * @type {string}
      */
     get conditions() {
-        return this.actor.conditions.map((i) => i.name).join(', ');
+        try {
+            return this.actor.conditions.map((i) => i.name).join(', ');
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'conditions', error.message);
+        }
     }
 
     /**
@@ -569,13 +637,10 @@ class pf2eActor {
      * @type {string}
      */
     get languages() {
-        if (semVer.gte(this.game.system.version, '5.12.0')) {
+        try {
             return this.actor.system.details.languages.value.filter((i) => i.trim() != '').join(', ');
-        } else {
-            return this.actor.system.traits.languages.value
-                .concat([this.actor.system.traits.languages.custom])
-                .filter((i) => i.trim() !== '')
-                .join(', ');
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'languages', error.message);
         }
     }
 
@@ -615,7 +680,7 @@ class pf2eActor {
      * @type {string}
      */
     get senses() {
-        if (semVer.gte(game.system.version, '5.12.0')) {
+        try {
             return this.actor.system.perception.senses
                 .filter((i) => i.type)
                 .map((i) => i.label)
@@ -625,16 +690,8 @@ class pf2eActor {
                         .map((i) => ' ' + (i.slug ? i.slug : i.label) + ' ' + (i.modifier < 0 ? '' : '+') + i.modifier)
                 )
                 .join(', ');
-        } else {
-            return this.actor.system.traits.senses
-                .filter((i) => i.type)
-                .map((i) => i.label)
-                .concat(
-                    this.actor.system.attributes.perception.modifiers
-                        .filter((i) => i.type === 'item' || i.type === 'untyped')
-                        .map((i) => ' ' + (i.slug ? i.slug : i.label) + ' ' + (i.modifier < 0 ? '' : '+') + i.modifier)
-                )
-                .join(', ');
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'senses', error.message);
         }
     }
 
@@ -643,7 +700,11 @@ class pf2eActor {
      * @type {boolean}
      */
     get hasArmorEquipped() {
-        return this.actor.items.filter((i) => i.type === 'armor' && i.isEquipped).length > 0;
+        try {
+            return this.actor.items.filter((i) => i.type === 'armor' && i.isEquipped).length > 0;
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'hasArmorEquipped', error.message);
+        }
     }
 
     /**
@@ -651,18 +712,22 @@ class pf2eActor {
      * @type {Object}
      */
     get equippedArmor() {
-        if (this.hasArmorEquipped) {
-            const armor = this.actor.items.filter((i) => i.type === 'armor' && i.isEquipped)[0];
-            const equippedArmor = {
-                strength: armor.strength,
-                speedPenalty: 0,
-            };
-            if (armor.strength <= this.actor.abilities.str.mod) {
-                equippedArmor['speedPenalty'] = armor.speedPenalty;
+        try {
+            if (this.hasArmorEquipped) {
+                const armor = this.actor.items.filter((i) => i.type === 'armor' && i.isEquipped)[0];
+                const equippedArmor = {
+                    strength: armor.strength,
+                    speedPenalty: 0,
+                };
+                if (armor.strength <= this.actor.abilities.str.mod) {
+                    equippedArmor['speedPenalty'] = armor.speedPenalty;
+                }
+                return equippedArmor;
+            } else {
+                return undefined;
             }
-            return equippedArmor;
-        } else {
-            return undefined;
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'equippedArmor', error.message);
         }
     }
 
@@ -671,8 +736,11 @@ class pf2eActor {
      * @type {string}
      */
     get baseSpeed() {
-        const movement = this.movement.filter((f) => f.isPrimary)[0];
-        return movement.displayName;
+        try {
+            return this.baseMovement.displayName;
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'baseSpeed', error.message);
+        }
     }
 
     /**
@@ -680,7 +748,11 @@ class pf2eActor {
      * @type {Object}
      */
     get baseMovement() {
-        return this.movement.filter((f) => f.isPrimary)[0];
+        try {
+            return this.movement.filter((f) => f.isPrimary)[0];
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'baseMovement', error.message);
+        }
     }
 
     /**
@@ -689,33 +761,40 @@ class pf2eActor {
      */
     get movement() {
         const movement = [];
-        const primary = {
-            label: this.actor.system.attributes.speed.label,
-            type: this.actor.system.attributes.speed.type,
-            value: this.actor.system.attributes.speed.total,
-            isPrimary: true,
-        };
-        if (this.actor.system.attributes.speed.slug === 'land-speed') {
-            primary['displayName'] = this.actor.system.attributes.speed.total + ' feet';
-        } else {
-            primary['displayName'] =
-                this.actor.system.attributes.speed.label + ' ' + this.actor.system.attributes.speed.total + ' feet';
-        }
-        movement.push(primary);
-        this.actor.system.attributes.speed.otherSpeeds.forEach((m) => {
-            const move = {
-                label: m.label,
-                type: m.type,
-                value: m.total,
-                isPrimary: false,
+        try {
+            const primary = {
+                label: this.actor.system.attributes.speed?.label || 'unknown',
+                type: this.actor.system.attributes.speed?.type || 'unknown',
+                value: this.actor.system.attributes.speed?.total || 0,
+                isPrimary: true,
             };
-            if (m.slug === 'land-speed') {
-                move['displayName'] = m.total + ' feet';
+
+            if (typeof this.actor.system.attributes.speed === 'undefined') {
+                primary['displayName'] = 'unknown';
+            } else if (this.actor.system.attributes.speed.slug === 'land-speed') {
+                primary['displayName'] = this.actor.system.attributes.speed.total + ' feet';
             } else {
-                move['displayName'] = m.label + ' ' + m.total + ' feet';
+                primary['displayName'] =
+                    this.actor.system.attributes.speed.label + ' ' + this.actor.system.attributes.speed.total + ' feet';
             }
-            movement.push(move);
-        });
+            movement.push(primary);
+            (this.actor.system.attributes.speed?.otherSpeeds || []).forEach((m) => {
+                const move = {
+                    label: m.label,
+                    type: m.type,
+                    value: m.total,
+                    isPrimary: false,
+                };
+                if (m.slug === 'land-speed') {
+                    move['displayName'] = m.total + ' feet';
+                } else {
+                    move['displayName'] = m.label + ' ' + m.total + ' feet';
+                }
+                movement.push(move);
+            });
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'movement', error.message);
+        }
         return movement;
     }
 
@@ -724,11 +803,16 @@ class pf2eActor {
      * @type {String}
      */
     get sneakAttackDamage() {
-        if (typeof this.actor.flags.pf2e.sneakAttackDamage !== 'undefined') {
-            const sad = this.actor.flags.pf2e.sneakAttackDamage;
-            return `${sad.number}d${sad.faces}`;
-        } else {
-            return '';
+        try {
+            const flags = this.actor.flags.pf2e || this.actor.flags.sf2e;
+            if (typeof flags.sneakAttackDamage !== 'undefined') {
+                const sad = flags.sneakAttackDamage;
+                return `${sad.number}d${sad.faces}`;
+            } else {
+                return '';
+            }
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'sneakAttackDamage', error.message);
         }
     }
 
@@ -738,68 +822,72 @@ class pf2eActor {
      * @returns {Object} formatted strike
      */
     _strike(rawStrike) {
-        const strModifier = rawStrike.modifiers
-            .filter((i) => i.type === 'ability' && i.slug === 'str' && i.enabled)
-            .map((i) => i.modifier)
-            .reduce((a, b) => a + b, 0);
-        const dexModifier = rawStrike.modifiers
-            .filter((i) => i.type === 'ability' && i.slug === 'dex' && i.enabled)
-            .map((i) => i.modifier)
-            .reduce((a, b) => a + b, 0);
-        const strike = {
-            label: rawStrike.label,
-            readied: rawStrike.ready,
-            isMelee: rawStrike.options.includes('melee'),
-            isRanged: rawStrike.options.includes('ranged'),
-            hasFinesse: rawStrike.item.system.traits.value.includes('finesse'),
-            statusModifier: rawStrike.modifiers
-                .filter((i) => i.type === 'status' && i.enabled)
+        try {
+            const strModifier = rawStrike.modifiers
+                .filter((i) => i.type === 'ability' && i.slug === 'str' && i.enabled)
                 .map((i) => i.modifier)
-                .reduce((a, b) => a + b, 0),
-            proficiencyModifier: rawStrike.modifiers
-                .filter((i) => i.type === 'proficiency' && i.enabled)
+                .reduce((a, b) => a + b, 0);
+            const dexModifier = rawStrike.modifiers
+                .filter((i) => i.type === 'ability' && i.slug === 'dex' && i.enabled)
                 .map((i) => i.modifier)
-                .reduce((a, b) => a + b, 0),
-            itemModifier: rawStrike.modifiers
-                .filter((i) => i.type === 'item' && i.enabled)
-                .map((i) => i.modifier)
-                .reduce((a, b) => a + b, 0),
-            hasBludgeoningDamage:
-                rawStrike.item.system.damage.damageType === 'bludgeoning' ||
-                rawStrike.item.system.traits.value.includes('versatile-b') ||
-                false,
-            hasPiercingDamage:
-                rawStrike.item.system.damage.damageType === 'piercing' ||
-                rawStrike.item.system.traits.value.includes('versatile-p') ||
-                false,
-            hasSlashingDamage:
-                rawStrike.item.system.damage.damageType === 'slashing' ||
-                rawStrike.item.system.traits.value.includes('versatile-s') ||
-                false,
-            damageFormula: rawStrike.damage({ getFormula: true }),
-            sneakAttackDamage: this.sneakAttackDamage,
-            traits: pf2eHelper
-                .runesToTraits(rawStrike.item.system.runes)
-                .concat(rawStrike.item.system.traits.value)
-                .sort(),
-        };
-        if (strike.isRanged && typeof rawStrike.item.system.range !== 'undefined') {
-            strike['traits'].push(`range-${rawStrike.item.system.range}`);
-            strike['traits'].sort();
-        }
-        strike['modifier'] = rawStrike.totalModifier - strike.statusModifier;
+                .reduce((a, b) => a + b, 0);
+            const strike = {
+                label: rawStrike.label,
+                readied: rawStrike.ready,
+                isMelee: rawStrike.options.includes('melee'),
+                isRanged: rawStrike.options.includes('ranged'),
+                hasFinesse: rawStrike.item.system.traits.value.includes('finesse'),
+                statusModifier: rawStrike.modifiers
+                    .filter((i) => i.type === 'status' && i.enabled)
+                    .map((i) => i.modifier)
+                    .reduce((a, b) => a + b, 0),
+                proficiencyModifier: rawStrike.modifiers
+                    .filter((i) => i.type === 'proficiency' && i.enabled)
+                    .map((i) => i.modifier)
+                    .reduce((a, b) => a + b, 0),
+                itemModifier: rawStrike.modifiers
+                    .filter((i) => i.type === 'item' && i.enabled)
+                    .map((i) => i.modifier)
+                    .reduce((a, b) => a + b, 0),
+                hasBludgeoningDamage:
+                    rawStrike.item.system.damage.damageType === 'bludgeoning' ||
+                    rawStrike.item.system.traits.value.includes('versatile-b') ||
+                    false,
+                hasPiercingDamage:
+                    rawStrike.item.system.damage.damageType === 'piercing' ||
+                    rawStrike.item.system.traits.value.includes('versatile-p') ||
+                    false,
+                hasSlashingDamage:
+                    rawStrike.item.system.damage.damageType === 'slashing' ||
+                    rawStrike.item.system.traits.value.includes('versatile-s') ||
+                    false,
+                damageFormula: rawStrike.damage({ getFormula: true }),
+                sneakAttackDamage: this.sneakAttackDamage,
+                traits: pf2eHelper
+                    .runesToTraits(rawStrike.item.system.runes)
+                    .concat(rawStrike.item.system.traits.value)
+                    .sort(),
+            };
+            if (strike.isRanged && typeof rawStrike.item.system.range !== 'undefined') {
+                strike['traits'].push(`range-${rawStrike.item.system.range}`);
+                strike['traits'].sort();
+            }
+            strike['modifier'] = rawStrike.totalModifier - strike.statusModifier;
 
-        if (strike.isRanged) {
-            strike['attributeModifier'] = dexModifier;
-            strike['attributeName'] = 'dex';
-        } else if (strike.isMelee && strike.hasFinesse && dexModifier > strModifier) {
-            strike['attributeModifier'] = dexModifier;
-            strike['attributeName'] = 'dex';
-        } else {
-            strike['attributeModifier'] = strModifier;
-            strike['attributeName'] = 'str';
+            if (strike.isRanged) {
+                strike['attributeModifier'] = dexModifier;
+                strike['attributeName'] = 'dex';
+            } else if (strike.isMelee && strike.hasFinesse && dexModifier > strModifier) {
+                strike['attributeModifier'] = dexModifier;
+                strike['attributeName'] = 'dex';
+            } else {
+                strike['attributeModifier'] = strModifier;
+                strike['attributeName'] = 'str';
+            }
+            return strike;
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', '_strike', error.message);
         }
-        return strike;
     }
 
     /**
@@ -875,7 +963,7 @@ class pf2eActor {
             classDC['attributeModifier'] = this.actor.classDC?.attributeModifier?.value || 0;
             classDC['rank'] = this.actor.classDC?.rank || 0;
         } catch (error) {
-            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'weaponProficiencies', error.message);
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'classDC', error.message);
         }
 
         return classDC;
@@ -906,7 +994,7 @@ class pf2eActor {
                         description: a.system.description?.value,
                     };
                     const sub = this.actor.items
-                        .filter((i) => i.flags?.pf2e?.grantedBy?.id === a._id)
+                        .filter((i) => i.flags?.pf2e?.grantedBy?.id === a._id || i.flags?.sf2e?.grantedBy?.id === a._id)
                         .map((i) => i.name);
                     if (sub.length > 0) {
                         feature['displayName'] = `${a.name} (${sub.join(', ')})`;
@@ -916,11 +1004,16 @@ class pf2eActor {
             /* get the hidden heritage features */
             this.actor.items
                 .filter(
-                    (f) => f.type === 'feat' && f.system.location === null && f.flags.pf2e.grantedBy?.id !== undefined
+                    (f) =>
+                        f.type === 'feat' &&
+                        f.system.location === null &&
+                        (f.flags?.pf2e?.grantedBy?.id !== undefined || f.flags?.sf2e?.grantedBy?.id !== undefined)
                 )
                 .forEach((a) => {
                     const grantedBy = this.actor.items.filter(
-                        (i) => i._id === a.flags?.pf2e?.grantedBy?.id && i.type === 'heritage'
+                        (i) =>
+                            (i._id === a.flags?.pf2e?.grantedBy?.id && i.type === 'heritage') ||
+                            (i._id === a.flags?.sf2e?.grantedBy?.id && i.type === 'heritage')
                     );
                     if (grantedBy.length > 0) {
                         const feature = {
@@ -968,7 +1061,9 @@ class pf2eActor {
                     .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
                     .forEach((f) => {
                         const sub = this.actor.items
-                            .filter((f) => f.flags?.pf2e?.grantedBy?.id === f._id)
+                            .filter(
+                                (i) => i.flags?.pf2e?.grantedBy?.id === f._id || i.flags?.sf2e?.grantedBy?.id === f._id
+                            )
                             .map((m) => m.name);
                         let featName = f.name;
                         if (f.grants.length > 0) {
@@ -1116,7 +1211,11 @@ class pf2eActor {
         try {
             this.actor.items
                 .filter(
-                    (f) => f.type === 'feat' && f.system.location === null && f.flags.pf2e.grantedBy?.id === undefined
+                    (f) =>
+                        f.type === 'feat' &&
+                        f.system?.location === null &&
+                        f.flags?.pf2e?.grantedBy?.id === undefined &&
+                        f.flags?.sf2e?.grantedBy?.id === undefined
                 )
                 .forEach((feat) => {
                     bonusFeats.push({
@@ -1183,7 +1282,7 @@ class pf2eActor {
                 )
                 .forEach((f) => {
                     const subFeatures = this.actor.items
-                        .filter((i) => i.flags?.pf2e?.grantedBy?.id === f._id)
+                        .filter((i) => i.flags?.pf2e?.grantedBy?.id === f._id || i.flags?.sf2e?.grantedBy?.id === f._id)
                         .map((m) => m.name);
                     const feature = {
                         level: f.system.level.value,
@@ -1265,25 +1364,29 @@ class pf2eActor {
      * @returns {Item}
      */
     _rawItem(item) {
-        const rawItem = {
-            name: item.name,
-            displayName: (item.system.quantity > 1 ? `${item.system.quantity} ` : '') + item.name,
-            quantity: item.system.quantity,
-            isMagical: item.isMagical,
-            isInvested: item.isInvested,
-            bulk: item.system.bulk.value,
-            type: item.type,
-            stackGroup: item.system.stackGroup,
-            carryType: item.system.equipped.carryType,
-            level: item.system.level.value,
-            price: this._calculatePrice(item.system.price),
-            traits: [item.system.traits.rarity].concat(item.system.traits.value),
-            description: item.system.description.value,
-            items: [],
-            containerId: item.system.containerId,
-            // activation?
-        };
-        return rawItem;
+        try {
+            const rawItem = {
+                name: item.name,
+                displayName: (item.system.quantity > 1 ? `${item.system.quantity} ` : '') + item.name,
+                quantity: item.system.quantity,
+                isMagical: item.isMagical,
+                isInvested: item.isInvested,
+                bulk: item.system.bulk.value,
+                type: item.type,
+                stackGroup: item.system.stackGroup,
+                carryType: item.system.equipped.carryType,
+                level: item.system.level.value,
+                price: this._calculatePrice(item.system.price),
+                traits: [item.system.traits.rarity].concat(item.system.traits.value),
+                description: item.system.description.value,
+                items: [],
+                containerId: item.system.containerId,
+                // activation?
+            };
+            return rawItem;
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', '_rawItem', error.message);
+        }
     }
 
     /**
@@ -1293,14 +1396,18 @@ class pf2eActor {
      */
     flatItems(itemList = this.items) {
         const flatItems = [];
-        itemList.forEach((item) => {
-            flatItems.push(item);
-            this.flatItems(item.items).forEach((childItem) => {
-                if (flatItems.map((m) => m.name).indexOf(childItem.name) < 0) {
-                    flatItems.push(childItem);
-                }
+        try {
+            itemList.forEach((item) => {
+                flatItems.push(item);
+                this.flatItems(item.items).forEach((childItem) => {
+                    if (flatItems.map((m) => m.name).indexOf(childItem.name) < 0) {
+                        flatItems.push(childItem);
+                    }
+                });
             });
-        });
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'flatItems', error.message);
+        }
         return flatItems;
     }
 
@@ -1309,10 +1416,17 @@ class pf2eActor {
      * @type {Item[]}
      */
     get heldItems() {
-        return this.items.filter(
-            (f) =>
-                f.stackGroup !== 'coins' && f.type !== 'consumable' && f.type !== 'treasure' && f.carryType === 'held'
-        );
+        try {
+            return this.items.filter(
+                (f) =>
+                    f.stackGroup !== 'coins' &&
+                    f.type !== 'consumable' &&
+                    f.type !== 'treasure' &&
+                    f.carryType === 'held'
+            );
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'heldItems', error.message);
+        }
     }
 
     /**
@@ -1320,7 +1434,11 @@ class pf2eActor {
      * @type {Item[]}
      */
     get consumables() {
-        return this.items.filter((f) => f.stackGroup !== 'coins' && f.type === 'consumable');
+        try {
+            return this.items.filter((f) => f.stackGroup !== 'coins' && f.type === 'consumable');
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'consumables', error.message);
+        }
     }
 
     /**
@@ -1328,10 +1446,17 @@ class pf2eActor {
      * @type {Item[]}
      */
     get wornItems() {
-        return this.items.filter(
-            (f) =>
-                f.stackGroup !== 'coins' && f.type !== 'consumable' && f.type !== 'treasure' && f.carryType === 'worn'
-        );
+        try {
+            return this.items.filter(
+                (f) =>
+                    f.stackGroup !== 'coins' &&
+                    f.type !== 'consumable' &&
+                    f.type !== 'treasure' &&
+                    f.carryType === 'worn'
+            );
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'wornItems', error.message);
+        }
     }
 
     /**
@@ -1378,11 +1503,15 @@ class pf2eActor {
      */
     _calculatePrice(price) {
         const calculatePrice = [];
-        ['pp', 'gp', 'sp', 'cp'].forEach((coin) => {
-            if (price.value[coin] > 0) {
-                calculatePrice.push(`${price.value[coin]} ${coin}`);
-            }
-        });
+        try {
+            ['pp', 'gp', 'sp', 'cp'].forEach((coin) => {
+                if (price.value[coin] > 0) {
+                    calculatePrice.push(`${price.value[coin]} ${coin}`);
+                }
+            });
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', '_calculatePrice', error.message);
+        }
         return calculatePrice;
     }
 
@@ -1391,7 +1520,13 @@ class pf2eActor {
      * @type {Item[]}
      */
     get gemsAndArtwork() {
-        return this.items.filter((f) => f.stackGroup !== 'coins' && f.type !== 'consumable' && f.type === 'treasure');
+        try {
+            return this.items.filter(
+                (f) => f.stackGroup !== 'coins' && f.type !== 'consumable' && f.type === 'treasure'
+            );
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'gemsAndArtwork', error.message);
+        }
     }
 
     /**
@@ -1530,10 +1665,13 @@ class pf2eActor {
      */
     get hasOccultTradition() {
         try {
-            this.actor.spellcasting.filter(
-                (f) =>
-                    f.system?.tradition?.value == 'occult' && this.spellcastingTypes.includes(f.system?.prepared?.value)
-            ).length > 0;
+            return (
+                this.actor.spellcasting.filter(
+                    (f) =>
+                        f.system?.tradition?.value == 'occult' &&
+                        this.spellcastingTypes.includes(f.system?.prepared?.value)
+                ).length > 0
+            );
         } catch (error) {
             throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'hasOccultTradition', error.message);
         }
@@ -1545,10 +1683,13 @@ class pf2eActor {
      */
     get hasPrimalTradition() {
         try {
-            this.actor.spellcasting.filter(
-                (f) =>
-                    f.system?.tradition?.value == 'primal' && this.spellcastingTypes.includes(f.system?.prepared?.value)
-            ).length > 0;
+            return (
+                this.actor.spellcasting.filter(
+                    (f) =>
+                        f.system?.tradition?.value == 'primal' &&
+                        this.spellcastingTypes.includes(f.system?.prepared?.value)
+                ).length > 0
+            );
         } catch (error) {
             throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'hasPrimalTradition', error.message);
         }
@@ -1560,10 +1701,13 @@ class pf2eActor {
      */
     get hasDivineTradition() {
         try {
-            this.actor.spellcasting.filter(
-                (f) =>
-                    f.system?.tradition?.value == 'divine' && this.spellcastingTypes.includes(f.system?.prepared?.value)
-            ).length > 0;
+            return (
+                this.actor.spellcasting.filter(
+                    (f) =>
+                        f.system?.tradition?.value == 'divine' &&
+                        this.spellcastingTypes.includes(f.system?.prepared?.value)
+                ).length > 0
+            );
         } catch (error) {
             throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'hasDivineTradition', error.message);
         }
@@ -1941,11 +2085,15 @@ export class pf2ePlayer extends pf2eActor {
      * @type {Object}
      */
     get background() {
-        const background = {
-            name: this.actor.background?.name || 'unknown',
-            description: this.actor.background?.system.description.value || '',
-        };
-        return background;
+        try {
+            const background = {
+                name: this.actor.background?.name || 'unknown',
+                description: this.actor.background?.system.description.value || '',
+            };
+            return background;
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2ePlayer', 'background', error.message);
+        }
     }
 
     /**
@@ -2025,7 +2173,11 @@ export class pf2eNPC extends pf2eActor {
      */
     get ac() {
         const ac = {};
-        ac['modifier'] = this.actor.system.attributes.ac.value;
+        try {
+            ac['modifier'] = this.actor.system.attributes.ac.value;
+        } catch (error) {
+            throw new pf2eActorPropertyError('actor-export', 'pf2eNPC', 'ac', error.message);
+        }
 
         return ac;
     }

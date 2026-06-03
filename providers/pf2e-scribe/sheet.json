@@ -13,7 +13,7 @@
     "requirements": [
         {
             "system": "pf2e",
-            "system_version": "5.9.0"
+            "system_version": "8.2.0"
         }
     ],
     "files": [

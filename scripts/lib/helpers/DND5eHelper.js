@@ -45,12 +45,18 @@ class dnd5eActor {
         const abilities = {};
         try {
             Object.keys(this.actor.system.abilities).forEach((a) => {
+                let save;
+                if (typeof this.actor.system.abilities[a].save.value != 'undefined') {
+                    save = this.actor.system.abilities[a].save.value;
+                } else {
+                    save = this.actor.system.abilities[a].save;
+                }
                 abilities[a] = {
                     name: this.game.dnd5e.config.abilities[a].label,
                     slug: a,
                     modifier: this.actor.system.abilities[a].mod,
                     value: this.actor.system.abilities[a].value,
-                    save: this.actor.system.abilities[a].save?.value || this.actor.system.abilities[a].save,
+                    save: save,
                     isProficient: this.actor.system.abilities[a].proficient > 0,
                 };
             });
@@ -432,7 +438,7 @@ class dnd5eActor {
                     l10n: { label: 'unknown' },
                 };
 
-                const _toLabel = (v) => (typeof v === 'string' ? v : v?.label ?? l);
+                const _toLabel = (v) => (typeof v === 'string' ? v : (v?.label ?? l));
                 if (typeof this.game.dnd5e.config.languages?.standard?.children?.[l] !== 'undefined') {
                     language['label'] = _toLabel(this.game.dnd5e.config.languages.standard.children[l]);
                     language['isStandard'] = true;
@@ -474,11 +480,11 @@ class dnd5eActor {
         Object.keys(this.game.dnd5e.config.movementTypes).forEach((m) => {
             if (this.actor.system.attributes.movement[m] !== null) {
                 const moveType = this.game.dnd5e.config.movementTypes[m];
-                const moveTypeLabel = typeof moveType === 'string' ? moveType : moveType?.label ?? m;
+                const moveTypeLabel = typeof moveType === 'string' ? moveType : (moveType?.label ?? m);
                 const moveUnitsKey = this.actor.system.attributes.movement.units;
                 const moveUnitsRaw = this.game.dnd5e.config.movementUnits?.[moveUnitsKey];
                 const moveUnitsLabel =
-                    typeof moveUnitsRaw === 'string' ? moveUnitsRaw : moveUnitsRaw?.label ?? moveUnitsKey ?? '';
+                    typeof moveUnitsRaw === 'string' ? moveUnitsRaw : (moveUnitsRaw?.label ?? moveUnitsKey ?? '');
                 const move = {
                     slug: m,
                     label: moveTypeLabel,
@@ -595,11 +601,13 @@ class dnd5eActor {
      * @type {number}
      */
     get spellSaveDC() {
-        if (semVer.lt(game.system.version, '4.0.0')) {
-            return this.actor.system.attributes.spelldc || 0;
-        } else {
-            return this.actor.system.attributes.spell.dc || 0;
+        let spellSaveDC = 0;
+        try {
+            spellSaveDC = this.actor.system.attributes.spell?.dc ?? this.actor.system.attributes.spelldc;
+        } catch (error) {
+            throw new dnd5eActorPropertyError('actor-export', this.className, 'spellSaveDC', error.message);
         }
+        return spellSaveDC;
     }
 
     /**
@@ -636,7 +644,7 @@ class dnd5eActor {
             };
             if (typeof this.game.dnd5e.config.toolProficiencies?.[p] !== 'undefined') {
                 const _v = this.game.dnd5e.config.toolProficiencies[p];
-                toolProficiency['label'] = typeof _v === 'string' ? _v : _v?.label ?? p;
+                toolProficiency['label'] = typeof _v === 'string' ? _v : (_v?.label ?? p);
             } else if (
                 typeof this.game.packs.get('dnd5e.items').index.get(this.game.dnd5e.config.toolIds[p]) !== 'undefined'
             ) {
@@ -735,7 +743,7 @@ class dnd5ePlayer extends dnd5eActor {
                 };
                 if (typeof this.game.dnd5e.config.armorProficiencies?.[p] !== 'undefined') {
                     const _v = this.game.dnd5e.config.armorProficiencies[p];
-                    armorProficiency['label'] = typeof _v === 'string' ? _v : _v?.label ?? p;
+                    armorProficiency['label'] = typeof _v === 'string' ? _v : (_v?.label ?? p);
                 } else if (
                     typeof this.game.packs.get('dnd5e.items').index.get(this.game.dnd5e.config.armorIds[p]) !==
                     'undefined'
@@ -794,8 +802,10 @@ class dnd5ePlayer extends dnd5eActor {
     get race() {
         const race = super.race;
         try {
-            race['name'] = this.actor.system.details.race.name || this.actor.system.details.race;
-            race['l10n']['name'] = this.game.i18n.localize(race['name']);
+            if (this.actor.system.details.race !== null) {
+                race['name'] = this.actor.system.details.race.name || this.actor.system.details.race;
+                race['l10n']['name'] = this.game.i18n.localize(race['name']);
+            }
         } catch (error) {
             throw new dnd5eActorPropertyError('actor-export', this.className, 'race', error.message);
         }
@@ -818,7 +828,7 @@ class dnd5ePlayer extends dnd5eActor {
                 };
                 if (typeof this.game.dnd5e.config.weaponProficiencies?.[p] !== 'undefined') {
                     const _v = this.game.dnd5e.config.weaponProficiencies[p];
-                    weaponProficiency['label'] = typeof _v === 'string' ? _v : _v?.label ?? p;
+                    weaponProficiency['label'] = typeof _v === 'string' ? _v : (_v?.label ?? p);
                 } else if (
                     typeof this.game.packs.get('dnd5e.items').index.get(this.game.dnd5e.config.weaponIds[p]) !==
                     'undefined'

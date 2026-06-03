@@ -1,5 +1,5 @@
-<form>
-    <p class="notes">Please select the Providers you wish to allow</p>
+<section class="standard-form scrollable">
+    <p class="notes hint">Please select the Providers you wish to allow</p>
     {{#each providers}}
     {{#if allowed}}
     <div class="form-group">
@@ -7,7 +7,7 @@
         <div class="form-fields">
             <input type="checkbox" name="{{ id }}" data-dtype="Boolean" {{checked isEnabled}}/>
         </div>
-        <p class="notes">{{ description }}</p>
+        <p class="notes hint">{{ description }}</p>
     </div>
     {{/if}}
     {{/each}}
@@ -19,4 +19,4 @@
             <i class="fa-solid fa-undo"></i> Undo
         </button>
     </div>
-</form>
+</section>

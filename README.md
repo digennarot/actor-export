@@ -8,11 +8,15 @@
 
 A system agnostic Foundry VTT module which allows exporting your actors in a variety of formats through the use of (custom) providers.
 
+## Supported Foundry Versions
+
+Foundry VTT v12, v13 and v14 (verified up to v14).
+
 Feel free to join the [actor-export room](https://matrix.to/#/#actor-export-general:matrix.elaba.net), [actor-export D&D 5e room](https://matrix.to/#/#actor-export-dnd5e:matrix.elaba.net), [actor-export Pathfinder 2e room](https://matrix.to/#/#actor-export-pf2e:matrix.elaba.net) or [actor-export Starfinder 2e playtest room](https://matrix.to/#/#actor-export-sf2e:matrix.elaba.net) on Matrix or join the [actor-export Channel](https://discord.gg/6U89NQrtyS) on Discord for help.
 
 ## Installation
 
-Install this module through the Foundry VTT Administrator interface, by searching for `actor-export`, or by specifying the following URL: `https://github.com/bushvin/actor-export/releases/latest/download/module.json`
+Install this module through the Foundry VTT Administrator interface, by searching for `actor-export`, or by specifying the following URL: `https://github.com/digennarot/actor-export/releases/latest/download/module.json`
 
 As a Gamemaster, activate the `actor-export` module in your world.
 
@@ -50,26 +54,27 @@ A provider is a set of (javascript) instructions to be interpreted in order to g
 
 | Name                                                                                                                                      | System         | Description                                                                                                                         | Type             | Author(s)                             |
 | ----------------------------------------------------------------------------------------------------------------------------------------- | -------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ---------------- | ------------------------------------- |
-| Dungeons & Dragons 5th edition Character sheets                                                                                           | dnd5e (3.0.0+) | A set of PDF sheets based on the Official D&D5e Character Sheets by WoTC                                                            | pdf              | [bushvin](https://github.com/bushvin) |
+| Dungeons & Dragons 5th edition Character sheets                                                                                           | dnd5e (5.0.2+) | A set of PDF sheets based on the Official D&D5e Character Sheets by WoTC                                                            | pdf              | [bushvin](https://github.com/bushvin) |
 | Paizo's Pathfinder Roleplaying Game Character Sheets                                                                                      | pf1 (10.0+)    | The official Paizo Pathfinder Roleplaying Game Character Sheets                                                                     | pdf              | [bushvin](https://github.com/bushvin) |
-| Black Book Éditions Feuilles de personnage en français                                                                                    | pf2e (5.9.0+)  | La traduction française des feuille de personnage officielles de Paizo PF2e                                                         | pdf              | [bushvin](https://github.com/bushvin) |
-| PF2e Scribe Generator                                                                                                                     | pf2e (5.9.0+)  | A set of templates to generate scribe.pf2.tools markdown                                                                            | scribe.pf2.tools | [bushvin](https://github.com/bushvin) |
-| [Bushvin's PF2e Remaster Character sheets]([./pf2e-remaster-bushvin](https://github.com/bushvin/actor-export/wiki/pf2e-remaster-bushvin)) | pf2e (5.9.0+)  | A set of character sheets based on Paizo's PF2e Remaster                                                                            | pdf              | [bushvin](https://github.com/bushvin) |
-| [Paizo's PF2e Remaster Character sheets]([./pf2e-remaster-paizo](https://github.com/bushvin/actor-export/wiki/pf2e-remaster-paizo))       | pf2e (5.9.0+)  | The official Paizo PF2e Remastered Character Sheets                                                                                 | pdf              | [bushvin](https://github.com/bushvin) |
-| Paizo's Starfinder 2e Playtest Character sheets                                                                                           | pf2e (6.5.0+)  | The official Paizo Starfinder 2e Playtest Character Sheets. **This character sheet is subject to change as the game rules evolve.** | pdf              | [bushvin](https://github.com/bushvin) |
+| Black Book Éditions Feuilles de personnage en français                                                                                    | pf2e (8.2.0+)  | La traduction française des feuille de personnage officielles de Paizo PF2e                                                         | pdf              | [bushvin](https://github.com/bushvin) |
+| PF2e Scribe Generator                                                                                                                     | pf2e (8.2.0+)  | A set of templates to generate scribe.pf2.tools markdown                                                                            | scribe.pf2.tools | [bushvin](https://github.com/bushvin) |
+| [Bushvin's PF2e Remaster Character sheets](https://github.com/digennarot/actor-export/wiki/pf2e-remaster-bushvin)                          | pf2e (8.2.0+)  | A set of character sheets based on Paizo's PF2e Remaster                                                                            | pdf              | [bushvin](https://github.com/bushvin) |
+| [Paizo's PF2e Remaster Character sheets](https://github.com/digennarot/actor-export/wiki/pf2e-remaster-paizo)                              | pf2e (8.2.0+)  | The official Paizo PF2e Remastered Character Sheets                                                                                 | pdf              | [bushvin](https://github.com/bushvin) |
+| Paizo's Starfinder 2e Playtest Character sheets                                                                                           | pf2e (8.2.0+)  | The official Paizo Starfinder 2e Playtest Character Sheets. **This character sheet is subject to change as the game rules evolve.** | pdf              | [bushvin](https://github.com/bushvin) |
+| Paizo's Starfinder 2e Character sheets                                                                                                    | sf2e (1.1.2+)  | The official Paizo Starfinder 2e Character Sheets.                                                                                  | pdf              | [bushvin](https://github.com/bushvin) |
 
-For more, please refer to the [Provider](https://github.com/bushvin/actor-export/wiki#providers) section of the [wiki](https://github.com/bushvin/actor-export/wiki)
+For more, please refer to the [Provider](https://github.com/digennarot/actor-export/wiki#providers) section of the [wiki](https://github.com/digennarot/actor-export/wiki)
 
 ## Change notes
 
 See [CHANGELOG.md](CHANGELOG.md)
 
-[badge_version]: https://img.shields.io/github/v/tag/bushvin/actor-export?label=Version&style=flat-square&color=2577a1
+[badge_version]: https://img.shields.io/github/v/tag/digennarot/actor-export?label=Version&style=flat-square&color=2577a1
 
-[badge_issues]: https://img.shields.io/github/issues/bushvin/actor-export?style=flat-square
-[badge_downloads]: https://img.shields.io/github/downloads/bushvin/actor-export/actor-export.zip?label=Downloads&style=flat-square&color=9b43a8
+[badge_issues]: https://img.shields.io/github/issues/digennarot/actor-export?style=flat-square
+[badge_downloads]: https://img.shields.io/github/downloads/digennarot/actor-export/actor-export.zip?label=Downloads&style=flat-square&color=9b43a8
 
-[badge_fvtt_versions]: https://img.shields.io/endpoint?url=https://foundryshields.com/version?url=https://github.com/bushvin/actor-export/releases/latest/download/module.json&style=flat-square&color=ff6400
+[badge_fvtt_versions]: https://img.shields.io/endpoint?url=https://foundryshields.com/version?url=https://github.com/digennarot/actor-export/releases/latest/download/module.json&style=flat-square&color=ff6400
 
 [badge_mastodon]: https://img.shields.io/mastodon/follow/1084764?domain=https%3A%2F%2Fmastodon.social&logo=mastodon&logoColor=white&style=flat-square&label=%40bushvin%40mastodon.social
 
