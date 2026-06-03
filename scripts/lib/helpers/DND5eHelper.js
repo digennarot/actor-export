@@ -438,7 +438,7 @@ class dnd5eActor {
                     l10n: { label: 'unknown' },
                 };
 
-                const _toLabel = (v) => (typeof v === 'string' ? v : (v?.label ?? l));
+                const _toLabel = (v) => (typeof v === 'string' ? v : v?.label ?? l);
                 if (typeof this.game.dnd5e.config.languages?.standard?.children?.[l] !== 'undefined') {
                     language['label'] = _toLabel(this.game.dnd5e.config.languages.standard.children[l]);
                     language['isStandard'] = true;
@@ -480,11 +480,11 @@ class dnd5eActor {
         Object.keys(this.game.dnd5e.config.movementTypes).forEach((m) => {
             if (this.actor.system.attributes.movement[m] !== null) {
                 const moveType = this.game.dnd5e.config.movementTypes[m];
-                const moveTypeLabel = typeof moveType === 'string' ? moveType : (moveType?.label ?? m);
+                const moveTypeLabel = typeof moveType === 'string' ? moveType : moveType?.label ?? m;
                 const moveUnitsKey = this.actor.system.attributes.movement.units;
                 const moveUnitsRaw = this.game.dnd5e.config.movementUnits?.[moveUnitsKey];
                 const moveUnitsLabel =
-                    typeof moveUnitsRaw === 'string' ? moveUnitsRaw : (moveUnitsRaw?.label ?? moveUnitsKey ?? '');
+                    typeof moveUnitsRaw === 'string' ? moveUnitsRaw : moveUnitsRaw?.label ?? moveUnitsKey ?? '';
                 const move = {
                     slug: m,
                     label: moveTypeLabel,
@@ -644,7 +644,7 @@ class dnd5eActor {
             };
             if (typeof this.game.dnd5e.config.toolProficiencies?.[p] !== 'undefined') {
                 const _v = this.game.dnd5e.config.toolProficiencies[p];
-                toolProficiency['label'] = typeof _v === 'string' ? _v : (_v?.label ?? p);
+                toolProficiency['label'] = typeof _v === 'string' ? _v : _v?.label ?? p;
             } else if (
                 typeof this.game.packs.get('dnd5e.items').index.get(this.game.dnd5e.config.toolIds[p]) !== 'undefined'
             ) {
@@ -743,7 +743,7 @@ class dnd5ePlayer extends dnd5eActor {
                 };
                 if (typeof this.game.dnd5e.config.armorProficiencies?.[p] !== 'undefined') {
                     const _v = this.game.dnd5e.config.armorProficiencies[p];
-                    armorProficiency['label'] = typeof _v === 'string' ? _v : (_v?.label ?? p);
+                    armorProficiency['label'] = typeof _v === 'string' ? _v : _v?.label ?? p;
                 } else if (
                     typeof this.game.packs.get('dnd5e.items').index.get(this.game.dnd5e.config.armorIds[p]) !==
                     'undefined'
@@ -828,7 +828,7 @@ class dnd5ePlayer extends dnd5eActor {
                 };
                 if (typeof this.game.dnd5e.config.weaponProficiencies?.[p] !== 'undefined') {
                     const _v = this.game.dnd5e.config.weaponProficiencies[p];
-                    weaponProficiency['label'] = typeof _v === 'string' ? _v : (_v?.label ?? p);
+                    weaponProficiency['label'] = typeof _v === 'string' ? _v : _v?.label ?? p;
                 } else if (
                     typeof this.game.packs.get('dnd5e.items').index.get(this.game.dnd5e.config.weaponIds[p]) !==
                     'undefined'
