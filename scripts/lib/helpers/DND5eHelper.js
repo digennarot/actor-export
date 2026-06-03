@@ -45,12 +45,18 @@ class dnd5eActor {
         const abilities = {};
         try {
             Object.keys(this.actor.system.abilities).forEach((a) => {
+                let save;
+                if (typeof(this.actor.system.abilities[a].save.value) != 'undefined' ) {
+                    save = this.actor.system.abilities[a].save.value;
+                } else {
+                    save = this.actor.system.abilities[a].save;
+                }
                 abilities[a] = {
                     name: this.game.dnd5e.config.abilities[a].label,
                     slug: a,
                     modifier: this.actor.system.abilities[a].mod,
                     value: this.actor.system.abilities[a].value,
-                    save: this.actor.system.abilities[a].save?.value || this.actor.system.abilities[a].save,
+                    save: save,
                     isProficient: this.actor.system.abilities[a].proficient > 0,
                 };
             });
@@ -595,11 +601,14 @@ class dnd5eActor {
      * @type {number}
      */
     get spellSaveDC() {
-        if (semVer.lt(game.system.version, '4.0.0')) {
-            return this.actor.system.attributes.spelldc || 0;
-        } else {
-            return this.actor.system.attributes.spell.dc || 0;
+        let spellSaveDC = 0;
+        try {
+            spellSaveDC = this.actor.system.attributes.spell?.dc || this.actor.system.attributes.spelldc;
+        } catch (error) {
+            throw new dnd5eActorPropertyError('actor-export', this.className, 'spellSaveDC', error.message);
+
         }
+        return spellSaveDC;
     }
 
     /**
@@ -794,8 +803,10 @@ class dnd5ePlayer extends dnd5eActor {
     get race() {
         const race = super.race;
         try {
-            race['name'] = this.actor.system.details.race.name || this.actor.system.details.race;
-            race['l10n']['name'] = this.game.i18n.localize(race['name']);
+            if (this.actor.system.details.race !== null) {
+                race['name'] = this.actor.system.details.race.name || this.actor.system.details.race;
+                race['l10n']['name'] = this.game.i18n.localize(race['name']);
+            }
         } catch (error) {
             throw new dnd5eActorPropertyError('actor-export', this.className, 'race', error.message);
         }

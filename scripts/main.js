@@ -2,6 +2,8 @@ import { semVer } from './lib/SemVer.js';
 import { baseProvider } from './lib/providers/BaseProvider.js';
 import './lib/FileSaver.js';
 
+const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
+
 /**
  * @class
  * Class to contain all relevant information and functions for the module
@@ -48,6 +50,20 @@ export class actorExport {
         }
     }
 
+    static partition(str, separator = ".") {
+        const index = str.indexOf(separator);
+
+        if (index === -1) {
+            return [str, "", ""];
+        }
+
+        return [
+            str.slice(0, index),
+            separator,
+            str.slice(index + separator.length)
+        ];
+    }
+
     /**
      * The initialization function for the module
      */
@@ -58,7 +74,7 @@ export class actorExport {
             label: `ACTOR-EXPORT.settings.${this.SETTINGS.PROVIDER_FILTER}.label`,
             hint: `ACTOR-EXPORT.settings.${this.SETTINGS.PROVIDER_FILTER}.hint`,
             icon: `fa fa-cogs`,
-            type: actorExportProvidersDialog,
+            type: actorExportProvidersDialogV2,
             restricted: true,
             requiresReload: true,
         });
@@ -68,7 +84,7 @@ export class actorExport {
             label: `ACTOR-EXPORT.settings.${this.SETTINGS.PROVIDER_CUSTOM}.label`,
             hint: `ACTOR-EXPORT.settings.${this.SETTINGS.PROVIDER_CUSTOM}.hint`,
             icon: `fa fa-file-code`,
-            type: actorExportCustomProvider,
+            type: actorExportCustomProviderV2,
             restricted: true,
             requiresReload: true,
         });
@@ -234,8 +250,13 @@ export class actorExport {
         }
     }
 
+    /**
+     *
+     * @param {string} provider - unique identifier for the provider
+     * @returns
+     */
     static providerPath(provider) {
-        return `/modules/${this.ID}/providers/${provider}`;
+        return foundry.utils.getRoute(`/modules/${this.ID}/providers/${provider}`);
     }
 
     /**
@@ -267,44 +288,49 @@ export class actorExport {
             document.getElementById('actor-export-spinner-canvas').style.display = 'none';
         }
     }
+
+
 }
 
 /**
  * @class
  * A form class for the Actor Export Dialog
  * @param {Object} actor the Foundry VTT actor object
- * @extends FormApplication
- * NOTE: This is deprecated and should be replaced by V2 Application Framework
- * foundry.applications.api.ApplicationV2
+ * @param {Object} options additional options to be passed
+ * @extends HandlebarsApplicationMixin(ApplicationV2)
  */
-class actorExportDialog extends FormApplication {
-    constructor(actor) {
-        super();
+class actorExportDialogV2 extends HandlebarsApplicationMixin(ApplicationV2) {
+    constructor(actor = {}, options = {}) {
+        super(options);
         this.actor = actor;
         this.customProviderFile = undefined;
+
     }
 
-    static get defaultOptions() {
-        const defaults = super.defaultOptions;
-
-        const overrides = {
-            closeOnSubmit: false,
-            height: 'auto',
-            width: 'auto',
-            resizable: true,
-            id: 'actor-export',
-            submitOnChange: true,
-            template: actorExport.TEMPLATES.ACTOR_EXPORT,
+    static DEFAULT_OPTIONS = {
+        id: 'actor-export',
+        tag: 'form',
+        classes: ['standard-form', 'categories'],
+        window: {
             title: 'ACTOR-EXPORT.export-dialog.title',
-            userId: game.userId,
-        };
+            icon: 'fa fa-address-card',
+            resizable: true,
+            minimizable: false
+        },
+        form: {
+            handler: actorExportDialogV2._onSubmit,
+            submitOnChange: true,
+            closeOnSubmit: false
+        }
+    };
 
-        const mergedOptions = foundry.utils.mergeObject(defaults, overrides);
-
-        return mergedOptions;
+    static PARTS = {
+        form: {
+            template: actorExport.TEMPLATES.ACTOR_EXPORT
+        }
     }
 
-    async getData() {
+    async _prepareContext(_options) {
         const providers = await actorExport.providers();
         this.providers = providers;
         const enabledProviders = game.settings.get(actorExport.ID, actorExport.SETTINGS.ENABLED_PROVIDERS);
@@ -325,37 +351,20 @@ class actorExportDialog extends FormApplication {
                 providers[i].isEnabled = false;
             }
         }
-        const data = super.getData();
-        const overrides = {
+
+        return {
             providers: providers,
             enabledProviders: enabledProviders,
             allowedProviders: allowedProviders,
             downloadEnabled: true,
-            previewEnabled: false,
+            previewEnabled: true,
             customProvider: game.settings.get(actorExport.ID, actorExport.SETTINGS.PROVIDER_CUSTOM_CODE).trim() !== '',
             actorType: this.actor.type,
-        };
-        const mergedData = foundry.utils.mergeObject(data, overrides);
-        return mergedData;
+        }
+
     }
 
-    async _updateObject(event, formData) {
-        let selectedProviderFiles = [];
-        document
-            .getElementById('actor-export-form')
-            .querySelectorAll('input[type=checkbox]')
-            .forEach((input) => {
-                if (input.checked) {
-                    const provider = input.getAttribute('data-provider');
-                    const file = input.getAttribute('data-file');
-                    selectedProviderFiles.push(`${provider}.${file}`);
-                }
-            });
-        game.settings.set(actorExport.ID, actorExport.SETTINGS.SELECTED_PROVIDER_FILES, selectedProviderFiles);
-    }
-
-    activateListeners(html) {
-        super.activateListeners(html);
+    _onRender(_context, _options) {
         const uploadCustomProviderFileButton = document.getElementById('upload-file');
         if (uploadCustomProviderFileButton !== null) {
             uploadCustomProviderFileButton.addEventListener('change', (event) => {
@@ -363,9 +372,6 @@ class actorExportDialog extends FormApplication {
             });
         }
 
-        /* FIXME: why doesn't this work?
-        html.on('click', '.actor-export-download', this.downloadFiles(this));
-        */
         const downloadButton = document.getElementById('actor-export-download');
         if (downloadButton !== null) {
             downloadButton.addEventListener('click', (event) => {
@@ -381,24 +387,32 @@ class actorExportDialog extends FormApplication {
                 this.previewFiles(event);
             });
         }
+
     }
 
-    downloadFiles(event) {
+    static async _onSubmit(_event, _form, formData) {
+        const data = formData.object;
+        let selectedProviderFiles = [];
+
+        Object.keys(formData.object).forEach((key) => {
+            if (formData.object[key] === true) {
+                    selectedProviderFiles.push(key);
+            }
+        });
+
+        game.settings.set(actorExport.ID, actorExport.SETTINGS.SELECTED_PROVIDER_FILES, selectedProviderFiles);
+    }
+
+    downloadFiles(_event) {
+        const fileList = game.settings.get(actorExport.ID, actorExport.SETTINGS.SELECTED_PROVIDER_FILES);
         const selectedFiles = {};
-        document
-            .getElementById('actor-export-form')
-            .querySelectorAll('input[type=checkbox]')
-            .forEach((input) => {
-                if (input.checked) {
-                    document.getElementById('download_counter').value =
-                        parseInt(document.getElementById('download_counter').value) + 1;
-                    actorExport.providerFileProgress(document.getElementById(`field.${input.id}`));
-                    if (!Object.keys(selectedFiles).includes(input.getAttribute('data-provider'))) {
-                        selectedFiles[input.getAttribute('data-provider')] = [];
-                    }
-                    selectedFiles[input.getAttribute('data-provider')].push(input.getAttribute('data-file'));
-                }
-            });
+        fileList.forEach((value) => {
+            let part = actorExport.partition(value, '.')
+            if (!Object.keys(selectedFiles).includes(part[0])) {
+                selectedFiles[part[0]] = [];
+            }
+            selectedFiles[part[0]].push(part[2])
+        });
         if (Object.keys(selectedFiles).length === 0) {
             ui.notifications.warn('You must select at least one provider to export your character!');
             return false;
@@ -459,7 +473,7 @@ class actorExportDialog extends FormApplication {
                         actorExport.providerFileProgress(document.getElementById('field._custom_._custom_'));
                     });
             } else {
-                dataUri = `/modules/${actorExport.ID}/providers/${providerId}/provider.js?t=${Date.now()}`;
+                dataUri = foundry.utils.getRoute(`/modules/${actorExport.ID}/providers/${providerId}/provider.js?t=${Date.now()}`);
                 import(dataUri)
                     .then((module) => {
                         if (module.mapper === undefined) {
@@ -532,38 +546,49 @@ class actorExportDialog extends FormApplication {
             }
         }
     }
+
+
+
 }
 
 /**
  * @class
  * A form class for the Actor Export Custom Dialog
- * @extends FormApplication
- * NOTE: This is deprecated and should be replaced by V2 Application Framework
+ * @param {Object} options additional options to be passed
+ * @extends HandlebarsApplicationMixin(ApplicationV2)
  */
-class actorExportCustomProvider extends FormApplication {
-    static get defaultOptions() {
-        const defaults = super.defaultOptions;
-
-        const overrides = {
-            closeOnSubmit: true,
-            resizable: true,
-            id: 'actor-export-custom-provider',
-            submitOnChange: false,
-            template: actorExport.TEMPLATES.ACTOR_EXPORT_CUSTOM_PROVIDER,
-            title: 'ACTOR-EXPORT.settings.actorExportCustomProvider.title',
-            userId: game.userId,
-        };
-
-        const mergedOptions = foundry.utils.mergeObject(defaults, overrides);
-
-        return mergedOptions;
+class actorExportCustomProviderV2 extends HandlebarsApplicationMixin(ApplicationV2) {
+    constructor(options = {}) {
+        super(options)
     }
 
-    async getData() {
-        const data = super.getData();
-        let exampleCode = `import { baseProvider } from '${window.location.protocol}//${window.location.hostname}/modules/actor-export/scripts/lib/providers/BaseProvider.js';
-        import { pdfProvider } from '${window.location.protocol}//${window.location.hostname}/modules/actor-export/scripts/lib/providers/PDFProvider.js';
-        import { scribeProvider } from '${window.location.protocol}//${window.location.hostname}/modules/actor-export/scripts/lib/providers/ScribeProvider.js';
+    static DEFAULT_OPTIONS = {
+        id: 'actor-export-custom-provider',
+        tag: 'form',
+        classes: ['standard-form', 'window-content'],
+        window: {
+            title: 'ACTOR-EXPORT.settings.actorExportCustomProvider.title',
+            icon: 'fa fa-file-code',
+            resizable: true,
+            minimizable: false
+        },
+        form: {
+            handler: actorExportCustomProviderV2._onSubmit,
+            submitOnChange: false,
+            closeOnSubmit: true
+        }
+    };
+
+    static PARTS = {
+        form: {
+            template: actorExport.TEMPLATES.ACTOR_EXPORT_CUSTOM_PROVIDER
+        }
+    }
+
+    async _prepareContext(_options) {
+        let exampleCode = `import { baseProvider } from '${window.location.protocol}//${window.location.hostname}${foundry.utils.getRoute("/modules/actor-export/scripts/lib/providers/BaseProvider.js")}';
+        import { pdfProvider } from '${window.location.protocol}//${window.location.hostname}${foundry.utils.getRoute("/modules/actor-export/scripts/lib/providers/PDFProvider.js")}';
+        import { scribeProvider } from '${window.location.protocol}//${window.location.hostname}${foundry.utils.getRoute("/modules/actor-export/scripts/lib/providers/ScribeProvider.js")}';
 
         // The full URI above must be specified.
 
@@ -583,17 +608,15 @@ class actorExportCustomProvider extends FormApplication {
             .split('\n')
             .map((i) => i.trim())
             .join('\n');
-        const overrides = {
+        return {
             customProvider: game.settings.get(actorExport.ID, actorExport.SETTINGS.PROVIDER_CUSTOM_CODE),
-            exampleCode: exampleCode,
-        };
-        const mergedData = foundry.utils.mergeObject(data, overrides);
-        return mergedData;
+            exampleCode: exampleCode
+        }
     }
 
-    async _updateObject(event, formData) {
+    static async _onSubmit(_event, _form, formData) {
         const oldCustomProvider = game.settings.get(actorExport.ID, actorExport.SETTINGS.PROVIDER_CUSTOM_CODE);
-        const newCustomProvider = document.getElementById('actor-export-custom-provider-javascript').value;
+        const newCustomProvider = formData.object['actor-export-custom-provider']
         if (oldCustomProvider !== newCustomProvider) {
             game.settings.set(actorExport.ID, actorExport.SETTINGS.PROVIDER_CUSTOM_CODE, newCustomProvider);
         }
@@ -603,29 +626,38 @@ class actorExportCustomProvider extends FormApplication {
 /**
  * @class
  * A form class for the providers settings dialog
- * @extends FormApplication
- * NOTE: This is deprecated and should be replaced by V2 Application Framework
+ * @param {Object} options additional options to be passed
+ * @extends HandlebarsApplicationMixin(ApplicationV2)
  */
-class actorExportProvidersDialog extends FormApplication {
-    static get defaultOptions() {
-        const defaults = super.defaultOptions;
-
-        const overrides = {
-            closeOnSubmit: true,
-            resizable: true,
-            id: 'actor-export-providers',
-            submitOnChange: false,
-            template: actorExport.TEMPLATES.ACTOR_EXPORT_PROVIDER,
-            title: 'ACTOR-EXPORT.settings.actorExportProviderDialog.title',
-            userId: game.userId,
-        };
-
-        const mergedOptions = foundry.utils.mergeObject(defaults, overrides);
-
-        return mergedOptions;
+class actorExportProvidersDialogV2 extends HandlebarsApplicationMixin(ApplicationV2) {
+    constructor(options = {}) {
+        super(options)
     }
 
-    async getData() {
+    static DEFAULT_OPTIONS = {
+        id: 'actor-export-providers',
+        tag: 'form',
+        classes: ['standard-form'],
+        window: {
+            title: 'ACTOR-EXPORT.settings.actorExportProviderDialog.title',
+            icon: 'fa fa-file-code',
+            resizable: true,
+            minimizable: false
+        },
+        form: {
+            handler: actorExportProvidersDialogV2._onSubmit,
+            submitOnChange: false,
+            closeOnSubmit: true
+        }
+    };
+
+    static PARTS = {
+        form: {
+            template: actorExport.TEMPLATES.ACTOR_EXPORT_PROVIDER
+        }
+    }
+
+    async _prepareContext(_options) {
         const providers = await actorExport.providers();
         const enabledProviders = game.settings.get(actorExport.ID, actorExport.SETTINGS.ENABLED_PROVIDERS);
         for (let i = 0; i < providers.length; i++) {
@@ -635,23 +667,19 @@ class actorExportProvidersDialog extends FormApplication {
                 providers[i].isEnabled = false;
             }
         }
-        const data = super.getData();
-        const overrides = {
+        return {
             providers: providers,
             enabledProviders: enabledProviders,
         };
-        const mergedData = foundry.utils.mergeObject(data, overrides);
-        return mergedData;
     }
-
-    async _updateObject(event, formData) {
-        const expandedData = foundry.utils.expandObject(formData);
+    static async _onSubmit(_event, _form, formData) {
         let allowedProviders = [];
-        Object.keys(expandedData).forEach((key) => {
-            if (expandedData[key] === true) {
+        Object.keys(formData.object).forEach((key) => {
+            if (formData.object[key] === true) {
                 allowedProviders.push(key);
             }
         });
+
         game.settings.set(actorExport.ID, actorExport.SETTINGS.ENABLED_PROVIDERS, allowedProviders);
     }
 }
@@ -661,12 +689,6 @@ class actorExportProvidersDialog extends FormApplication {
  */
 Hooks.once('init', () => {
     actorExport.init();
-});
-
-/**
- * Add the 'Export' button in the character's actor dialog for ApplicationV1
- */
-Hooks.on('getActorSheetHeaderButtons', (sheet, buttons) => {
     Handlebars.registerHelper(`${actorExport.ID}-ifIsNullish`, function (value, options) {
         if (value == null) {
             return options.fn(this);
@@ -683,52 +705,34 @@ Hooks.on('getActorSheetHeaderButtons', (sheet, buttons) => {
         }
         return options.inverse(this);
     });
-
-    if (['character', 'familiar', 'npc', 'pc'].includes(sheet.actor.type)) {
-        buttons.unshift({
-            label: 'ACTOR-EXPORT.actor-dialog.header-button.label',
-            class: 'actor-export',
-            icon: 'fa fa-address-card',
-            onclick: () => {
-                new actorExportDialog(sheet.actor).render(true);
-            },
-        });
-    } else {
-        console.debug('Found an unsupported actor type:', sheet.actor.type);
-    }
 });
 
 /**
- * Add the 'Export' button in the character's actor dialog for ApplicationV2
+ * @function
+ * @param {Object} sheet the character sheet to be exported
+ * @param {Array} buttons the list of buttons to add our button to
  */
-Hooks.on('getHeaderControlsApplicationV2', (sheet, buttons) => {
-    Handlebars.registerHelper(`${actorExport.ID}-ifIsNullish`, function (value, options) {
-        if (value == null) {
-            return options.fn(this);
-        }
-        return options.inverse(this);
-    });
-
-    Handlebars.registerHelper(`${actorExport.ID}-ifIn`, function (haystack, needle, options) {
-        if (typeof haystack === 'undefined' || haystack.length == 0) {
-            return options.fn(this);
-        }
-        if (haystack.indexOf(needle) > -1) {
-            return options.fn(this);
-        }
-        return options.inverse(this);
-    });
-    if (['character', 'familiar', 'npc', 'pc'].includes(sheet.actor.type)) {
+function injectActorExportButton(sheet, buttons) {
+    if (sheet.id !== 'actor-export' && ['character', 'familiar', 'npc', 'pc'].includes(sheet.actor.type)) {
         buttons.unshift({
             label: 'ACTOR-EXPORT.actor-dialog.header-button.label',
             class: 'actor-export',
             icon: 'fa fa-address-card',
             onClick: () => {
-                console.log('Clicked');
-                new actorExportDialog(sheet.actor).render(true);
+                new actorExportDialogV2(sheet.actor).render(true);
+            },
+            onclick: () => {
+                new actorExportDialogV2(sheet.actor).render(true);
             },
         });
     } else {
-        console.debug('Found an unsupported actor type:', sheet.actor.type);
+        actorExport.log('debug', 'Found an unsupported actor type:', sheet.actor.type);
     }
-});
+
+}
+
+/**
+ * Add the 'Export' button in the character's actor dialog for ApplicationV2
+ */
+Hooks.on('getActorSheetHeaderButtons', injectActorExportButton);
+Hooks.on('getHeaderControlsActorSheetV2', injectActorExportButton);
