@@ -5,17 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [CalVer](https://calver.org/about.html) versioning.
 
-## [unreleased]
+## [2026.6.1] - 2026-06-03
 
 ### Added
 
 - Declared support for pf2e system v8.2.0 across all pf2e providers.
+- README: documented the new sf2e-paizo provider in the Current providers table and added a Supported Foundry Versions note.
 
 ### Changed
 
-- README: switched repository URLs to digennarot/actor-export, added a Supported Foundry Versions note, refreshed the provider table, and fixed broken markdown links.
+- README: switched repository URLs to digennarot/actor-export and fixed broken markdown links.
 - Merged upstream bushvin/actor-export changes through 2026.5.3 (new sf2e-paizo provider, Foundry v14 built-in form dialog rewrites, dnd5e fixes).
 - dnd5e: adapted helper to dnd5e v5.x / Foundry v14 schema.
+- Applied prettier formatting across the JS sources.
+
+### Fixed
+
+- sf2e-paizo: `will_bonus` now collects modifiers from `actor.saves.will` (was reading `actor.saves.reflex`).
+- sf2e-paizo: free actions no longer render the literal placeholder `blah` for trigger/effect; they default to empty strings and the description split runs only for reactions.
+- sf2e-paizo: spell and ritual second-column rollover (compared against `208` while the initial X was `218`, so it never triggered).
+- pf2e: `ancestryFeats` inner filter parameter no longer shadows the outer feat variable, so granted-by entries are matched correctly.
+- pf2e: `heldItems` error message now reports `heldItems` instead of `flatItems`.
+- pf2e: removed unused `actorExport` import from `PF2eHelper.js`.
+- main: example custom-provider imports use `window.location.origin` so the port is included.
+- templates: removed a stray `<` before `</legend>` in the Custom Provider fieldset.
+- dnd5e: `spellSaveDC` uses `??` so a literal `0` is not masked by the fallback.
 
 ## [2026.5.3] - 2026-05-30
 
