@@ -50,18 +50,14 @@ export class actorExport {
         }
     }
 
-    static partition(str, separator = ".") {
+    static partition(str, separator = '.') {
         const index = str.indexOf(separator);
 
         if (index === -1) {
-            return [str, "", ""];
+            return [str, '', ''];
         }
 
-        return [
-            str.slice(0, index),
-            separator,
-            str.slice(index + separator.length)
-        ];
+        return [str.slice(0, index), separator, str.slice(index + separator.length)];
     }
 
     /**
@@ -288,8 +284,6 @@ export class actorExport {
             document.getElementById('actor-export-spinner-canvas').style.display = 'none';
         }
     }
-
-
 }
 
 /**
@@ -304,7 +298,6 @@ class actorExportDialogV2 extends HandlebarsApplicationMixin(ApplicationV2) {
         super(options);
         this.actor = actor;
         this.customProviderFile = undefined;
-
     }
 
     static DEFAULT_OPTIONS = {
@@ -315,20 +308,20 @@ class actorExportDialogV2 extends HandlebarsApplicationMixin(ApplicationV2) {
             title: 'ACTOR-EXPORT.export-dialog.title',
             icon: 'fa fa-address-card',
             resizable: true,
-            minimizable: false
+            minimizable: false,
         },
         form: {
             handler: actorExportDialogV2._onSubmit,
             submitOnChange: true,
-            closeOnSubmit: false
-        }
+            closeOnSubmit: false,
+        },
     };
 
     static PARTS = {
         form: {
-            template: actorExport.TEMPLATES.ACTOR_EXPORT
-        }
-    }
+            template: actorExport.TEMPLATES.ACTOR_EXPORT,
+        },
+    };
 
     async _prepareContext(_options) {
         const providers = await actorExport.providers();
@@ -360,8 +353,7 @@ class actorExportDialogV2 extends HandlebarsApplicationMixin(ApplicationV2) {
             previewEnabled: true,
             customProvider: game.settings.get(actorExport.ID, actorExport.SETTINGS.PROVIDER_CUSTOM_CODE).trim() !== '',
             actorType: this.actor.type,
-        }
-
+        };
     }
 
     _onRender(_context, _options) {
@@ -387,7 +379,6 @@ class actorExportDialogV2 extends HandlebarsApplicationMixin(ApplicationV2) {
                 this.previewFiles(event);
             });
         }
-
     }
 
     static async _onSubmit(_event, _form, formData) {
@@ -396,7 +387,7 @@ class actorExportDialogV2 extends HandlebarsApplicationMixin(ApplicationV2) {
 
         Object.keys(formData.object).forEach((key) => {
             if (formData.object[key] === true) {
-                    selectedProviderFiles.push(key);
+                selectedProviderFiles.push(key);
             }
         });
 
@@ -407,11 +398,11 @@ class actorExportDialogV2 extends HandlebarsApplicationMixin(ApplicationV2) {
         const fileList = game.settings.get(actorExport.ID, actorExport.SETTINGS.SELECTED_PROVIDER_FILES);
         const selectedFiles = {};
         fileList.forEach((value) => {
-            let part = actorExport.partition(value, '.')
+            let part = actorExport.partition(value, '.');
             if (!Object.keys(selectedFiles).includes(part[0])) {
                 selectedFiles[part[0]] = [];
             }
-            selectedFiles[part[0]].push(part[2])
+            selectedFiles[part[0]].push(part[2]);
         });
         if (Object.keys(selectedFiles).length === 0) {
             ui.notifications.warn('You must select at least one provider to export your character!');
@@ -473,7 +464,9 @@ class actorExportDialogV2 extends HandlebarsApplicationMixin(ApplicationV2) {
                         actorExport.providerFileProgress(document.getElementById('field._custom_._custom_'));
                     });
             } else {
-                dataUri = foundry.utils.getRoute(`/modules/${actorExport.ID}/providers/${providerId}/provider.js?t=${Date.now()}`);
+                dataUri = foundry.utils.getRoute(
+                    `/modules/${actorExport.ID}/providers/${providerId}/provider.js?t=${Date.now()}`
+                );
                 import(dataUri)
                     .then((module) => {
                         if (module.mapper === undefined) {
@@ -546,9 +539,6 @@ class actorExportDialogV2 extends HandlebarsApplicationMixin(ApplicationV2) {
             }
         }
     }
-
-
-
 }
 
 /**
@@ -559,7 +549,7 @@ class actorExportDialogV2 extends HandlebarsApplicationMixin(ApplicationV2) {
  */
 class actorExportCustomProviderV2 extends HandlebarsApplicationMixin(ApplicationV2) {
     constructor(options = {}) {
-        super(options)
+        super(options);
     }
 
     static DEFAULT_OPTIONS = {
@@ -570,25 +560,25 @@ class actorExportCustomProviderV2 extends HandlebarsApplicationMixin(Application
             title: 'ACTOR-EXPORT.settings.actorExportCustomProvider.title',
             icon: 'fa fa-file-code',
             resizable: true,
-            minimizable: false
+            minimizable: false,
         },
         form: {
             handler: actorExportCustomProviderV2._onSubmit,
             submitOnChange: false,
-            closeOnSubmit: true
-        }
+            closeOnSubmit: true,
+        },
     };
 
     static PARTS = {
         form: {
-            template: actorExport.TEMPLATES.ACTOR_EXPORT_CUSTOM_PROVIDER
-        }
-    }
+            template: actorExport.TEMPLATES.ACTOR_EXPORT_CUSTOM_PROVIDER,
+        },
+    };
 
     async _prepareContext(_options) {
-        let exampleCode = `import { baseProvider } from '${window.location.protocol}//${window.location.hostname}${foundry.utils.getRoute("/modules/actor-export/scripts/lib/providers/BaseProvider.js")}';
-        import { pdfProvider } from '${window.location.protocol}//${window.location.hostname}${foundry.utils.getRoute("/modules/actor-export/scripts/lib/providers/PDFProvider.js")}';
-        import { scribeProvider } from '${window.location.protocol}//${window.location.hostname}${foundry.utils.getRoute("/modules/actor-export/scripts/lib/providers/ScribeProvider.js")}';
+        let exampleCode = `import { baseProvider } from '${window.location.protocol}//${window.location.hostname}${foundry.utils.getRoute('/modules/actor-export/scripts/lib/providers/BaseProvider.js')}';
+        import { pdfProvider } from '${window.location.protocol}//${window.location.hostname}${foundry.utils.getRoute('/modules/actor-export/scripts/lib/providers/PDFProvider.js')}';
+        import { scribeProvider } from '${window.location.protocol}//${window.location.hostname}${foundry.utils.getRoute('/modules/actor-export/scripts/lib/providers/ScribeProvider.js')}';
 
         // The full URI above must be specified.
 
@@ -610,13 +600,13 @@ class actorExportCustomProviderV2 extends HandlebarsApplicationMixin(Application
             .join('\n');
         return {
             customProvider: game.settings.get(actorExport.ID, actorExport.SETTINGS.PROVIDER_CUSTOM_CODE),
-            exampleCode: exampleCode
-        }
+            exampleCode: exampleCode,
+        };
     }
 
     static async _onSubmit(_event, _form, formData) {
         const oldCustomProvider = game.settings.get(actorExport.ID, actorExport.SETTINGS.PROVIDER_CUSTOM_CODE);
-        const newCustomProvider = formData.object['actor-export-custom-provider']
+        const newCustomProvider = formData.object['actor-export-custom-provider'];
         if (oldCustomProvider !== newCustomProvider) {
             game.settings.set(actorExport.ID, actorExport.SETTINGS.PROVIDER_CUSTOM_CODE, newCustomProvider);
         }
@@ -631,7 +621,7 @@ class actorExportCustomProviderV2 extends HandlebarsApplicationMixin(Application
  */
 class actorExportProvidersDialogV2 extends HandlebarsApplicationMixin(ApplicationV2) {
     constructor(options = {}) {
-        super(options)
+        super(options);
     }
 
     static DEFAULT_OPTIONS = {
@@ -642,20 +632,20 @@ class actorExportProvidersDialogV2 extends HandlebarsApplicationMixin(Applicatio
             title: 'ACTOR-EXPORT.settings.actorExportProviderDialog.title',
             icon: 'fa fa-file-code',
             resizable: true,
-            minimizable: false
+            minimizable: false,
         },
         form: {
             handler: actorExportProvidersDialogV2._onSubmit,
             submitOnChange: false,
-            closeOnSubmit: true
-        }
+            closeOnSubmit: true,
+        },
     };
 
     static PARTS = {
         form: {
-            template: actorExport.TEMPLATES.ACTOR_EXPORT_PROVIDER
-        }
-    }
+            template: actorExport.TEMPLATES.ACTOR_EXPORT_PROVIDER,
+        },
+    };
 
     async _prepareContext(_options) {
         const providers = await actorExport.providers();
@@ -728,7 +718,6 @@ function injectActorExportButton(sheet, buttons) {
     } else {
         actorExport.log('debug', 'Found an unsupported actor type:', sheet.actor.type);
     }
-
 }
 
 /**

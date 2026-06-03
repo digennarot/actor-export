@@ -41,7 +41,7 @@ class pf2eActor {
      */
     get name() {
         try {
-            return this.actor.name
+            return this.actor.name;
         } catch (error) {
             throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'name', error.message);
         }
@@ -118,7 +118,6 @@ class pf2eActor {
         } catch (error) {
             throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'heritage', error.message);
         }
-
     }
 
     /**
@@ -200,9 +199,8 @@ class pf2eActor {
                     .filter((i) => i.type === 'feat' && subClassFeatures.includes(i.system.slug))
                     .forEach((f) => {
                         this.actor.items
-                            .filter(i =>
-                                i.flags?.pf2e?.grantedBy?.id === f._id ||
-                                i.flags?.sf2e?.grantedBy?.id === f._id
+                            .filter(
+                                (i) => i.flags?.pf2e?.grantedBy?.id === f._id || i.flags?.sf2e?.grantedBy?.id === f._id
                             )
                             .forEach((s) => {
                                 subClass.push(s.name);
@@ -772,9 +770,9 @@ class pf2eActor {
                 isPrimary: true,
             };
 
-            if (typeof(this.actor.system.attributes.speed) === 'undefined') {
-                primary['displayName'] = 'unknown'
-            }else if (this.actor.system.attributes.speed.slug === 'land-speed') {
+            if (typeof this.actor.system.attributes.speed === 'undefined') {
+                primary['displayName'] = 'unknown';
+            } else if (this.actor.system.attributes.speed.slug === 'land-speed') {
                 primary['displayName'] = this.actor.system.attributes.speed.total + ' feet';
             } else {
                 primary['displayName'] =
@@ -807,7 +805,7 @@ class pf2eActor {
      */
     get sneakAttackDamage() {
         try {
-            const flags = this.actor.flags.pf2e || this.actor.flags.sf2e
+            const flags = this.actor.flags.pf2e || this.actor.flags.sf2e;
             if (typeof flags.sneakAttackDamage !== 'undefined') {
                 const sad = flags.sneakAttackDamage;
                 return `${sad.number}d${sad.faces}`;
@@ -997,10 +995,7 @@ class pf2eActor {
                         description: a.system.description?.value,
                     };
                     const sub = this.actor.items
-                        .filter(i =>
-                            i.flags?.pf2e?.grantedBy?.id === a._id ||
-                            i.flags?.sf2e?.grantedBy?.id === a._id
-                        )
+                        .filter((i) => i.flags?.pf2e?.grantedBy?.id === a._id || i.flags?.sf2e?.grantedBy?.id === a._id)
                         .map((i) => i.name);
                     if (sub.length > 0) {
                         feature['displayName'] = `${a.name} (${sub.join(', ')})`;
@@ -1010,13 +1005,16 @@ class pf2eActor {
             /* get the hidden heritage features */
             this.actor.items
                 .filter(
-                    (f) => f.type === 'feat' && f.system.location === null && (f.flags?.pf2e?.grantedBy?.id !== undefined || f.flags?.sf2e?.grantedBy?.id !== undefined)
+                    (f) =>
+                        f.type === 'feat' &&
+                        f.system.location === null &&
+                        (f.flags?.pf2e?.grantedBy?.id !== undefined || f.flags?.sf2e?.grantedBy?.id !== undefined)
                 )
                 .forEach((a) => {
                     const grantedBy = this.actor.items.filter(
                         (i) =>
-                            i._id === a.flags?.pf2e?.grantedBy?.id && i.type === 'heritage' ||
-                            i._id === a.flags?.sf2e?.grantedBy?.id && i.type === 'heritage'
+                            (i._id === a.flags?.pf2e?.grantedBy?.id && i.type === 'heritage') ||
+                            (i._id === a.flags?.sf2e?.grantedBy?.id && i.type === 'heritage')
                     );
                     if (grantedBy.length > 0) {
                         const feature = {
@@ -1064,9 +1062,8 @@ class pf2eActor {
                     .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
                     .forEach((f) => {
                         const sub = this.actor.items
-                            .filter((f) =>
-                                f.flags?.pf2e?.grantedBy?.id === f._id ||
-                                f.flags?.sf2e?.grantedBy?.id === f._id
+                            .filter(
+                                (f) => f.flags?.pf2e?.grantedBy?.id === f._id || f.flags?.sf2e?.grantedBy?.id === f._id
                             )
                             .map((m) => m.name);
                         let featName = f.name;
@@ -1215,7 +1212,11 @@ class pf2eActor {
         try {
             this.actor.items
                 .filter(
-                    (f) => f.type === 'feat' && f.system?.location === null && f.flags?.pf2e?.grantedBy?.id === undefined && f.flags?.sf2e?.grantedBy?.id === undefined
+                    (f) =>
+                        f.type === 'feat' &&
+                        f.system?.location === null &&
+                        f.flags?.pf2e?.grantedBy?.id === undefined &&
+                        f.flags?.sf2e?.grantedBy?.id === undefined
                 )
                 .forEach((feat) => {
                     bonusFeats.push({
@@ -1282,10 +1283,7 @@ class pf2eActor {
                 )
                 .forEach((f) => {
                     const subFeatures = this.actor.items
-                        .filter((i) =>
-                            i.flags?.pf2e?.grantedBy?.id === f._id ||
-                            i.flags?.sf2e?.grantedBy?.id === f._id
-                        )
+                        .filter((i) => i.flags?.pf2e?.grantedBy?.id === f._id || i.flags?.sf2e?.grantedBy?.id === f._id)
                         .map((m) => m.name);
                     const feature = {
                         level: f.system.level.value,
@@ -1422,7 +1420,10 @@ class pf2eActor {
         try {
             return this.items.filter(
                 (f) =>
-                    f.stackGroup !== 'coins' && f.type !== 'consumable' && f.type !== 'treasure' && f.carryType === 'held'
+                    f.stackGroup !== 'coins' &&
+                    f.type !== 'consumable' &&
+                    f.type !== 'treasure' &&
+                    f.carryType === 'held'
             );
         } catch (error) {
             throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'flatItems', error.message);
@@ -1449,7 +1450,10 @@ class pf2eActor {
         try {
             return this.items.filter(
                 (f) =>
-                    f.stackGroup !== 'coins' && f.type !== 'consumable' && f.type !== 'treasure' && f.carryType === 'worn'
+                    f.stackGroup !== 'coins' &&
+                    f.type !== 'consumable' &&
+                    f.type !== 'treasure' &&
+                    f.carryType === 'worn'
             );
         } catch (error) {
             throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'wornItems', error.message);
@@ -1518,7 +1522,9 @@ class pf2eActor {
      */
     get gemsAndArtwork() {
         try {
-            return this.items.filter((f) => f.stackGroup !== 'coins' && f.type !== 'consumable' && f.type === 'treasure');
+            return this.items.filter(
+                (f) => f.stackGroup !== 'coins' && f.type !== 'consumable' && f.type === 'treasure'
+            );
         } catch (error) {
             throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'gemsAndArtwork', error.message);
         }
@@ -1642,11 +1648,13 @@ class pf2eActor {
      */
     get hasArcaneTradition() {
         try {
-            return this.actor.spellcasting.filter(
+            return (
+                this.actor.spellcasting.filter(
                     (f) =>
                         f.system?.tradition?.value == 'arcane' &&
                         this.spellcastingTypes.includes(f.system?.prepared?.value)
-                ).length > 0;
+                ).length > 0
+            );
         } catch (error) {
             throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'hasArcaneTradition', error.message);
         }
@@ -1658,10 +1666,13 @@ class pf2eActor {
      */
     get hasOccultTradition() {
         try {
-            return this.actor.spellcasting.filter(
-                (f) =>
-                    f.system?.tradition?.value == 'occult' && this.spellcastingTypes.includes(f.system?.prepared?.value)
-            ).length > 0;
+            return (
+                this.actor.spellcasting.filter(
+                    (f) =>
+                        f.system?.tradition?.value == 'occult' &&
+                        this.spellcastingTypes.includes(f.system?.prepared?.value)
+                ).length > 0
+            );
         } catch (error) {
             throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'hasOccultTradition', error.message);
         }
@@ -1673,10 +1684,13 @@ class pf2eActor {
      */
     get hasPrimalTradition() {
         try {
-            return this.actor.spellcasting.filter(
-                (f) =>
-                    f.system?.tradition?.value == 'primal' && this.spellcastingTypes.includes(f.system?.prepared?.value)
-            ).length > 0;
+            return (
+                this.actor.spellcasting.filter(
+                    (f) =>
+                        f.system?.tradition?.value == 'primal' &&
+                        this.spellcastingTypes.includes(f.system?.prepared?.value)
+                ).length > 0
+            );
         } catch (error) {
             throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'hasPrimalTradition', error.message);
         }
@@ -1688,10 +1702,13 @@ class pf2eActor {
      */
     get hasDivineTradition() {
         try {
-            return this.actor.spellcasting.filter(
-                (f) =>
-                    f.system?.tradition?.value == 'divine' && this.spellcastingTypes.includes(f.system?.prepared?.value)
-            ).length > 0;
+            return (
+                this.actor.spellcasting.filter(
+                    (f) =>
+                        f.system?.tradition?.value == 'divine' &&
+                        this.spellcastingTypes.includes(f.system?.prepared?.value)
+                ).length > 0
+            );
         } catch (error) {
             throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'hasDivineTradition', error.message);
         }
