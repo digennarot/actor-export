@@ -576,9 +576,9 @@ class actorExportCustomProviderV2 extends HandlebarsApplicationMixin(Application
     };
 
     async _prepareContext(_options) {
-        let exampleCode = `import { baseProvider } from '${window.location.protocol}//${window.location.hostname}${foundry.utils.getRoute('/modules/actor-export/scripts/lib/providers/BaseProvider.js')}';
-        import { pdfProvider } from '${window.location.protocol}//${window.location.hostname}${foundry.utils.getRoute('/modules/actor-export/scripts/lib/providers/PDFProvider.js')}';
-        import { scribeProvider } from '${window.location.protocol}//${window.location.hostname}${foundry.utils.getRoute('/modules/actor-export/scripts/lib/providers/ScribeProvider.js')}';
+        let exampleCode = `import { baseProvider } from '${window.location.origin}${foundry.utils.getRoute('/modules/actor-export/scripts/lib/providers/BaseProvider.js')}';
+        import { pdfProvider } from '${window.location.origin}${foundry.utils.getRoute('/modules/actor-export/scripts/lib/providers/PDFProvider.js')}';
+        import { scribeProvider } from '${window.location.origin}${foundry.utils.getRoute('/modules/actor-export/scripts/lib/providers/ScribeProvider.js')}';
 
         // The full URI above must be specified.
 

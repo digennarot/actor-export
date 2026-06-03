@@ -603,7 +603,7 @@ class dnd5eActor {
     get spellSaveDC() {
         let spellSaveDC = 0;
         try {
-            spellSaveDC = this.actor.system.attributes.spell?.dc || this.actor.system.attributes.spelldc;
+            spellSaveDC = this.actor.system.attributes.spell?.dc ?? this.actor.system.attributes.spelldc;
         } catch (error) {
             throw new dnd5eActorPropertyError('actor-export', this.className, 'spellSaveDC', error.message);
         }

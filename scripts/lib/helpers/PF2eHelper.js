@@ -1,5 +1,4 @@
 import { genericPropertyError, genericHelper } from './GenericHelper.js';
-import { actorExport } from '../../main.js';
 /**
  * PF2eHelper module. Provides a couple of classes to easily manage your PF2e characters.
  * @module PF2eHelper
@@ -1063,7 +1062,7 @@ class pf2eActor {
                     .forEach((f) => {
                         const sub = this.actor.items
                             .filter(
-                                (f) => f.flags?.pf2e?.grantedBy?.id === f._id || f.flags?.sf2e?.grantedBy?.id === f._id
+                                (i) => i.flags?.pf2e?.grantedBy?.id === f._id || i.flags?.sf2e?.grantedBy?.id === f._id
                             )
                             .map((m) => m.name);
                         let featName = f.name;
@@ -1426,7 +1425,7 @@ class pf2eActor {
                     f.carryType === 'held'
             );
         } catch (error) {
-            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'flatItems', error.message);
+            throw new pf2eActorPropertyError('actor-export', 'pf2eActor', 'heldItems', error.message);
         }
     }
 

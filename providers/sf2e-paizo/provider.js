@@ -143,7 +143,7 @@ let defense_notes = [];
 let modifiers_types = ['ability', 'proficiency', 'item'];
 let fortitude_bonus = actor.saves.fortitude.modifiers.filter((i) => !modifiers_types.includes(i.type));
 let reflex_bonus = actor.saves.reflex.modifiers.filter((i) => !modifiers_types.includes(i.type));
-let will_bonus = actor.saves.reflex.modifiers.filter((i) => !modifiers_types.includes(i.type));
+let will_bonus = actor.saves.will.modifiers.filter((i) => !modifiers_types.includes(i.type));
 let all_bonus_slugs = fortitude_bonus
     .concat(reflex_bonus)
     .concat(will_bonus)
@@ -624,8 +624,8 @@ character.activities.forEach((a) => {
         const traits = sf2eHelper.formatTraits(a.traits);
         const reference = sf2eHelper.abbreviateSource(a.reference);
         const description = a.frequency + '\n' + a.description;
-        let trigger = 'blah';
-        let effect = 'blah';
+        let trigger = '';
+        let effect = '';
         if (a.type === 'reaction') {
             trigger = (description.split('<hr />').length > 0 ? description.split('<hr />')[0] : '').replace(
                 /<strong>Trigger<\/strong>/i,
@@ -897,7 +897,7 @@ character.knownSpells
             mapper.textBox(ref, fileName, 3, x + 107, y, 28, 10, spell.glyph, action_8_centered);
             mapper.textBox(ref, fileName, 3, x + 136, y, 22, 10, spell.rank, mf_8_centered);
             mapper.textBox(ref, fileName, 3, x + 159, y, 20, 10, 'O'.repeat(spell.prepared), mf_8_centered);
-            if (spellY >= spellMaxY && spellX === 208) {
+            if (spellY >= spellMaxY && spellX === 218) {
                 spellY = spellMinY;
                 spellX = 397;
             }
@@ -922,7 +922,7 @@ character.knownRituals.forEach((ritual) => {
         mapper.textBox(ref, fileName, 3, x + 136, y, 22, 10, ritual.rank, mf_8_centered);
         mapper.textBox(ref, fileName, 3, x + 159, y, 20, 10, ritual.cost, mf_8);
     }
-    if (ritualY >= ritualMaxY && ritualX === 208) {
+    if (ritualY >= ritualMaxY && ritualX === 218) {
         ritualY = ritualMinY;
         ritualX = 397;
     }
