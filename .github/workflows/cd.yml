@@ -54,9 +54,9 @@ jobs:
         artifacts: "module.json,${{ env.fvtt_module_id }}.zip"
         draft: false
         generateReleaseNotes: true
-        name: ${{ env.systemVersion }}
+        name: ${{ github.ref_name }}
         prerelease: false
-        tag: ${{ env.systemVersion }}
+        tag: ${{ github.ref_name }}
         token: ${{ secrets.GITHUB_TOKEN }}
 
   notify_matrix_elaba_net:
